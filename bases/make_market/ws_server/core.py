@@ -59,6 +59,7 @@ def update_fx_prices() -> None:
 async def consumer_handler(
     websocket: websockets.WebSocketServerProtocol,
 ) -> None:
+    """Consumer handler, parses messages received from customers."""
     try:
         async for message in websocket:
             try:
@@ -94,8 +95,6 @@ async def fx_price_publisher(
     :param websocket: The WebSocket connection.
     """
     logger.info("Client connected")
-
-    # After receiving a new FX pair, update prices and send updates
 
     while True:
         if fx_prices:
