@@ -1,4 +1,3 @@
-
 import asyncio
 import json
 
@@ -28,7 +27,6 @@ async def client_send_receive(message: str) -> dict:
 
 @pytest.mark.asyncio
 async def test_connection():
-
     # Send the message and receive the response
     response = await client_send_receive("Test message")
 
@@ -54,4 +52,6 @@ async def test_price_updates():
     # Check if the price has changed (within a reasonable range based on drift/volatility)
     updated_price = response["EUR/USD"]["price"]
     assert updated_price != initial_price
-    assert abs(updated_price - initial_price) <= 0.01  # Allow small changes due to drift/volatility
+    assert (
+        abs(updated_price - initial_price) <= 0.01
+    )  # Allow small changes due to drift/volatility

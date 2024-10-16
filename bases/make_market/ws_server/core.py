@@ -1,7 +1,7 @@
 import asyncio
 import json
 import random
-from typing import Dict, TypedDict, Any
+from typing import Any, Dict, TypedDict
 
 import websockets
 from make_market.log.core import get_logger
@@ -22,11 +22,7 @@ fx_pairs: Dict[str, FXPairData] = {}
 
 # Simulated FX pairs and their base prices
 fx_prices = {
-    "EUR/USD": {
-        "price": 0.8500,
-        "drift": 0.0002,
-        "volatility": 0.0005
-    },
+    "EUR/USD": {"price": 0.8500, "drift": 0.0002, "volatility": 0.0005},
 }
 
 
@@ -37,12 +33,14 @@ def get_updated_price(pair_data: FXPairData) -> float:
     :param pair_data: Dictionary containing price, drift, and volatility for an FX pair.
     :return: Updated FX pair price.
     """
-    base_price: float = pair_data['price']
-    drift: float = pair_data['drift']
-    volatility: float = pair_data['volatility']
+    base_price: float = pair_data["price"]
+    drift: float = pair_data["drift"]
+    volatility: float = pair_data["volatility"]
 
     # Simulate price drift and volatility (random fluctuation)
-    drift_effect: float = drift * random.uniform(0.95, 1.05)  # Slight random factor to drift
+    drift_effect: float = drift * random.uniform(
+        0.95, 1.05
+    )  # Slight random factor to drift
     volatility_effect: float = random.uniform(-volatility, volatility)
 
     new_price: float = base_price + drift_effect + volatility_effect
@@ -55,27 +53,31 @@ def update_fx_prices() -> None:
     """
     for pair, data in fx_prices.items():
         updated_price: float = get_updated_price(data)
-        fx_prices[pair]['price'] = updated_price
+        fx_prices[pair]["price"] = updated_price
 
 
-async def consumer_handler(websocket: websockets.WebSocketServerProtocol) -> None:
+async def consumer_handler(
+    websocket: websockets.WebSocketServerProtocol,
+) -> None:
     try:
         async for message in websocket:
             try:
                 request: Dict[str, Any] = json.loads(message)
 
                 if "pair" in request and "price" in request:
-                    pair: str = request['pair']
-                    price: float = request['price']
-                    drift: float = request.get('drift', 0.0)
-                    volatility: float = request.get('volatility', 0.001)
+                    pair: str = request["pair"]
+                    price: float = request["price"]
+                    drift: float = request.get("drift", 0.0)
+                    volatility: float = request.get("volatility", 0.001)
 
                     fx_prices[pair] = {
-                        'price': price,
-                        'drift': drift,
-                        'volatility': volatility
+                        "price": price,
+                        "drift": drift,
+                        "volatility": volatility,
                     }
-                    logger.info(f"Added new FX pair: {pair} (Price: {price}, Drift: {drift}, Volatility: {volatility})")
+                    logger.info(
+                        f"Added new FX pair: {pair} (Price: {price}, Drift: {drift}, Volatility: {volatility})"
+                    )
 
             except json.JSONDecodeError:
                 logger.info("Received invalid message, ignoring.")
@@ -83,7 +85,9 @@ async def consumer_handler(websocket: websockets.WebSocketServerProtocol) -> Non
         logger.info("Client disconnected.")
 
 
-async def fx_price_publisher(websocket: websockets.WebSocketServerProtocol) -> None:
+async def fx_price_publisher(
+    websocket: websockets.WebSocketServerProtocol,
+) -> None:
     """
     WebSocket handler to publish FX prices and listen for new FX pairs.
 
@@ -92,7 +96,7 @@ async def fx_price_publisher(websocket: websockets.WebSocketServerProtocol) -> N
     logger.info("Client connected")
 
     # After receiving a new FX pair, update prices and send updates
-    
+
     while True:
         if fx_prices:
             # Update FX prices
