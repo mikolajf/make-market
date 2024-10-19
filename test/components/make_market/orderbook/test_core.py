@@ -2,7 +2,7 @@ import pytest
 from make_market.orderbook import OrderBook
 
 
-def test_orderbook_initialization():
+def test_orderbook_initialization() -> None:
     orderbook = OrderBook(
         ask_prices=[100.0, 101.0],
         ask_sizes=[10.0, 15.0],
@@ -15,7 +15,7 @@ def test_orderbook_initialization():
     assert orderbook.bid_sizes == [20.0, 25.0]
 
 
-def test_orderbook_validation_success():
+def test_orderbook_validation_success() -> None:
     orderbook = OrderBook(
         ask_prices=[100.0],
         ask_sizes=[10.0],
@@ -29,7 +29,7 @@ def test_orderbook_validation_success():
     assert orderbook.bid_sizes == [20.0]
 
 
-def test_orderbook_validation_failure_ask():
+def test_orderbook_validation_failure_ask() -> None:
     with pytest.raises(
         ValueError,
         match="ask_prices and ask_sizes must be of the same length",
@@ -42,7 +42,7 @@ def test_orderbook_validation_failure_ask():
         )
 
 
-def test_orderbook_validation_failure_bid():
+def test_orderbook_validation_failure_bid() -> None:
     with pytest.raises(
         ValueError,
         match="bid_prices and bid_sizes must be of the same length",
@@ -55,7 +55,7 @@ def test_orderbook_validation_failure_bid():
         )
 
 
-def test_orderbook_empty_initialization():
+def test_orderbook_empty_initialization() -> None:
     orderbook = OrderBook()
     assert orderbook.ask_prices == []
     assert orderbook.ask_sizes == []
@@ -64,7 +64,7 @@ def test_orderbook_empty_initialization():
     assert orderbook.is_empty()
 
 
-def test_orderbook_partial_initialization():
+def test_orderbook_partial_initialization() -> None:
     orderbook = OrderBook(ask_prices=[100.0], ask_sizes=[10.0])
     assert orderbook.ask_prices == [100.0]
     assert orderbook.ask_sizes == [10.0]
@@ -72,7 +72,7 @@ def test_orderbook_partial_initialization():
     assert orderbook.bid_sizes == []
 
 
-def test_orderbook_non_increasing_ask_prices():
+def test_orderbook_non_increasing_ask_prices() -> None:
     with pytest.raises(
         ValueError,
         match="ask_prices must be in strictly increasing order",
@@ -85,7 +85,7 @@ def test_orderbook_non_increasing_ask_prices():
         )
 
 
-def test_orderbook_non_increasing_bid_prices():
+def test_orderbook_non_increasing_bid_prices() -> None:
     with pytest.raises(
         ValueError,
         match="bid_prices must be in strictly decreasing order",
@@ -96,3 +96,14 @@ def test_orderbook_non_increasing_bid_prices():
             bid_prices=[98.0, 99.0],
             bid_sizes=[20.0, 25.0],
         )
+
+
+def test_orderbook_random_creation() -> None:
+    orderbook1 = OrderBook.random(midprice=100.0, spread=1.0, n_levels=5)
+    orderbook2 = OrderBook.random(midprice=100.0, spread=1.0, n_levels=5)
+
+    assert orderbook1 != orderbook2
+    assert orderbook1.ask_prices != orderbook2.ask_prices
+    assert orderbook1.ask_sizes != orderbook2.ask_sizes
+    assert orderbook1.bid_prices != orderbook2.bid_prices
+    assert orderbook1.bid_sizes != orderbook2.bid_sizes
