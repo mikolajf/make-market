@@ -35,12 +35,40 @@ exclude = [
 line-length = 80
 
 [tool.ruff.lint]
-# By default, Ruff enables Flake8's E and F rules
-# Pyflakes - F, pycodestyle - E, W
-# flake8-builtins - A
-# Pylint - PLC, PLE, PLW
-# isort - I
-select = ['E', 'F', 'W', 'A', 'PLC', 'PLE', 'PLW', 'I']
+select = [
+    "ALL", # include all the rules, including new ones
+]
+ignore = [
+    #### modules
+    "ANN", # flake8-annotations
+    "COM", # flake8-commas
+    "C90", # mccabe complexity
+    "DJ",  # django
+    "EXE", # flake8-executable
+    "T10", # debugger
+    "TID", # flake8-tidy-imports
+
+    #### specific rules
+    "D100",  # Missing docstring in public module
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in magic method
+    "D106",  # Missing docstring in public nested class
+    "D107",  # Missing docstring in __init__
+    "D200",  # One-line docstring should fit on one line with quotes
+    "D205",  # 1 blank line required between summary line and description
+    "D212",  # Multi-line docstring summary should start at the first line
+    "D400",  # First line should end with a period
+    "D401",  # First line should be in imperative mood
+    "D415",  # First line should end with a period, question mark, or exclamation point
+    "E402",   # false positives for local imports
+    "E501",   # line too long
+    "TRY003", # external messages in exceptions are too verbose
+    "TD002",
+    "TD003",
+    "FIX002", # too verbose descriptions of todos,
+    "S101",   # ignore use of assert
+    "PLR2004", # ignore use of print
+]
 
 [tool.pyright]
 extraPaths = ["bases", "components"]
