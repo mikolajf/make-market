@@ -1,5 +1,5 @@
 import pytest
-from make_market.orderbook import OrderBook
+from make_market.orderbook import OrderBook, OrderBookDict
 
 
 def test_orderbook_initialization() -> None:
@@ -209,3 +209,33 @@ def test_orderbook_mid_price_one_sided_bid() -> None:
 def test_orderbook_mid_price_empty() -> None:
     orderbook = OrderBook()
     assert orderbook.mid_price is None
+
+
+def test_orderbook_to_dict() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0],
+        ask_sizes=[10.0, 15.0],
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    expected_dict = {
+        "ask_prices": [100.0, 101.0],
+        "ask_sizes": [10.0, 15.0],
+        "bid_prices": [99.0, 98.0],
+        "bid_sizes": [20.0, 25.0],
+    }
+    assert orderbook.to_dict() == expected_dict
+
+
+def test_orderbook_from_dict() -> None:
+    data: OrderBookDict = {
+        "ask_prices": [100.0, 101.0],
+        "ask_sizes": [10.0, 15.0],
+        "bid_prices": [99.0, 98.0],
+        "bid_sizes": [20.0, 25.0],
+    }
+    orderbook = OrderBook.from_dict(data)
+    assert orderbook.ask_prices == [100.0, 101.0]
+    assert orderbook.ask_sizes == [10.0, 15.0]
+    assert orderbook.bid_prices == [99.0, 98.0]
+    assert orderbook.bid_sizes == [20.0, 25.0]

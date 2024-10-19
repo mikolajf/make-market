@@ -1,6 +1,13 @@
 import random
 from dataclasses import dataclass, field
-from typing import Self
+from typing import Self, TypedDict
+
+
+class OrderBookDict(TypedDict):
+    ask_prices: list[float]
+    ask_sizes: list[float]
+    bid_prices: list[float]
+    bid_sizes: list[float]
 
 
 @dataclass
@@ -75,3 +82,17 @@ class OrderBook:
         if top_ask is None or top_bid is None:
             return None
         return (top_ask + top_bid) / 2
+
+    # create a method to serialize the orderbook to a dictionary
+    def to_dict(self) -> OrderBookDict:
+        return OrderBookDict(
+            ask_prices=self.ask_prices,
+            ask_sizes=self.ask_sizes,
+            bid_prices=self.bid_prices,
+            bid_sizes=self.bid_sizes,
+        )
+
+    # create a method to create an orderbook from a dictionary
+    @classmethod
+    def from_dict(cls, data: OrderBookDict) -> Self:
+        return cls(**data)

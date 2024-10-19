@@ -1,3 +1,3 @@
-from make_market.orderbook.core import OrderBook
+from make_market.orderbook.core import OrderBook, OrderBookDict
 
-__all__ = ["OrderBook"]
+__all__ = ["OrderBook", "OrderBookDict"]
