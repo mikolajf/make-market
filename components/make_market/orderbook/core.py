@@ -89,7 +89,8 @@ class OrderBook:
             return None
         return (top_ask + top_bid) / 2
 
-    # create a method to get number of levels in the orderbook, should return a tuple
+    # create a method to get number of levels in the orderbook,
+    # should return a tuple
     @property
     def n_levels(self) -> tuple[int, int]:
         return len(self.ask_prices), len(self.bid_prices)
