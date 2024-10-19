@@ -61,6 +61,7 @@ def test_orderbook_empty_initialization():
     assert orderbook.ask_sizes == []
     assert orderbook.bid_prices == []
     assert orderbook.bid_sizes == []
+    assert orderbook.is_empty()
 
 
 def test_orderbook_partial_initialization():

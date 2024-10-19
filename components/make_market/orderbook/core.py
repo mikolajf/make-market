@@ -20,3 +20,6 @@ class OrderBook:
             raise ValueError(
                 "bid_prices and bid_sizes must be of the same length"
             )
+
+    def is_empty(self):
+        return not (self.ask_prices or self.bid_prices)
