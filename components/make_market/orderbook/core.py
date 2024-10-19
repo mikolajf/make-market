@@ -21,5 +21,13 @@ class OrderBook:
                 "bid_prices and bid_sizes must be of the same length"
             )
 
+        # check that prices in ask_prices are in ascending order
+        if self.ask_prices != sorted(self.ask_prices):
+            raise ValueError("ask_prices must be in strictly increasing order")
+
+        # check that prices in bid_prices are in descending order
+        if self.bid_prices != sorted(self.bid_prices, reverse=True):
+            raise ValueError("bid_prices must be in strictly decreasing order")
+
     def is_empty(self):
         return not (self.ask_prices or self.bid_prices)
