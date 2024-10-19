@@ -107,3 +107,112 @@ def test_orderbook_random_creation() -> None:
     assert orderbook1.ask_sizes != orderbook2.ask_sizes
     assert orderbook1.bid_prices != orderbook2.bid_prices
     assert orderbook1.bid_sizes != orderbook2.bid_sizes
+
+
+def test_orderbook_top_level_prices_two_sided() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0],
+        ask_sizes=[10.0, 15.0],
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    top_ask, top_bid = OrderBook.top_level_prices(orderbook)
+    assert top_ask == 100.0
+    assert top_bid == 99.0
+
+
+def test_orderbook_top_level_prices_one_sided_ask() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0],
+        ask_sizes=[10.0, 15.0],
+    )
+    top_ask, top_bid = OrderBook.top_level_prices(orderbook)
+    assert top_ask == 100.0
+    assert top_bid is None
+
+
+def test_orderbook_top_level_prices_one_sided_bid() -> None:
+    orderbook = OrderBook(
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    top_ask, top_bid = OrderBook.top_level_prices(orderbook)
+    assert top_ask is None
+    assert top_bid == 99.0
+
+
+def test_orderbook_top_level_prices_empty() -> None:
+    orderbook = OrderBook()
+    top_ask, top_bid = OrderBook.top_level_prices(orderbook)
+    assert top_ask is None
+    assert top_bid is None
+
+
+def test_orderbook_top_level_spread_two_sided() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0],
+        ask_sizes=[10.0, 15.0],
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    spread = OrderBook.top_level_spread(orderbook)
+    assert spread == 1.0
+
+
+def test_orderbook_top_level_spread_one_sided_ask() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0],
+        ask_sizes=[10.0, 15.0],
+    )
+    spread = OrderBook.top_level_spread(orderbook)
+    assert spread is None
+
+
+def test_orderbook_top_level_spread_one_sided_bid() -> None:
+    orderbook = OrderBook(
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    spread = OrderBook.top_level_spread(orderbook)
+    assert spread is None
+
+
+def test_orderbook_top_level_spread_empty() -> None:
+    orderbook = OrderBook()
+    spread = OrderBook.top_level_spread(orderbook)
+    assert spread is None
+
+
+def test_orderbook_mid_price_two_sided() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0],
+        ask_sizes=[10.0, 15.0],
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    mid_price = OrderBook.mid_price(orderbook)
+    assert mid_price == 99.5
+
+
+def test_orderbook_mid_price_one_sided_ask() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0],
+        ask_sizes=[10.0, 15.0],
+    )
+    mid_price = OrderBook.mid_price(orderbook)
+    assert mid_price is None
+
+
+def test_orderbook_mid_price_one_sided_bid() -> None:
+    orderbook = OrderBook(
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    mid_price = OrderBook.mid_price(orderbook)
+    assert mid_price is None
+
+
+def test_orderbook_mid_price_empty() -> None:
+    orderbook = OrderBook()
+    mid_price = OrderBook.mid_price(orderbook)
+    assert mid_price is None

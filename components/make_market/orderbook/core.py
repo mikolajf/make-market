@@ -55,3 +55,25 @@ class OrderBook:
         bid_sizes = [random.uniform(5.0, 15.0) for i in range(n_levels)]
 
         return cls(ask_prices, ask_sizes, bid_prices, bid_sizes)
+
+    @staticmethod
+    def top_level_prices(
+        orderbook: "OrderBook",
+    ) -> tuple[float | None, float | None]:
+        top_ask = orderbook.ask_prices[0] if orderbook.ask_prices else None
+        top_bid = orderbook.bid_prices[0] if orderbook.bid_prices else None
+        return top_ask, top_bid
+
+    @staticmethod
+    def top_level_spread(orderbook: "OrderBook") -> float | None:
+        top_ask, top_bid = OrderBook.top_level_prices(orderbook)
+        if top_ask is None or top_bid is None:
+            return None
+        return top_ask - top_bid
+
+    @staticmethod
+    def mid_price(orderbook: "OrderBook") -> float | None:
+        top_ask, top_bid = OrderBook.top_level_prices(orderbook)
+        if top_ask is None or top_bid is None:
+            return None
+        return (top_ask + top_bid) / 2
