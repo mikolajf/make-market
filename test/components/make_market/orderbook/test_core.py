@@ -99,8 +99,8 @@ def test_orderbook_non_increasing_bid_prices() -> None:
 
 
 def test_orderbook_random_creation() -> None:
-    orderbook1 = OrderBook.random(midprice=100.0, spread=1.0, n_levels=5)
-    orderbook2 = OrderBook.random(midprice=100.0, spread=1.0, n_levels=5)
+    orderbook1 = OrderBook.random(midprice=100.0, spread=1.0)
+    orderbook2 = OrderBook.random(midprice=100.0, spread=1.0)
 
     assert orderbook1 != orderbook2
     assert orderbook1.ask_prices != orderbook2.ask_prices

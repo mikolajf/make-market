@@ -43,23 +43,29 @@ class OrderBook:
 
     # create class method to create a random orderbook given midprice and spread
     @classmethod
-    def random(cls, midprice: float, spread: float, n_levels: int) -> Self:
+    def random(
+        cls,
+        midprice: float,
+        spread: float,
+        n_ask_levels: int = 10,
+        n_bid_levels: int = 10,
+    ) -> Self:
         spread_variation = spread * 0.1  # 10% variation in spread
 
         ask_prices = [
             midprice
             + (i + 1) * spread
             + random.uniform(-spread_variation, spread_variation)
-            for i in range(n_levels)
+            for i in range(n_ask_levels)
         ]
-        ask_sizes = [random.uniform(5.0, 15.0) for i in range(n_levels)]
+        ask_sizes = [random.uniform(5.0, 15.0) for i in range(n_ask_levels)]
         bid_prices = [
             midprice
             - (i + 1) * spread
             + random.uniform(-spread_variation, spread_variation)
-            for i in range(n_levels)
+            for i in range(n_bid_levels)
         ]
-        bid_sizes = [random.uniform(5.0, 15.0) for i in range(n_levels)]
+        bid_sizes = [random.uniform(5.0, 15.0) for i in range(n_bid_levels)]
 
         return cls(ask_prices, ask_sizes, bid_prices, bid_sizes)
 
