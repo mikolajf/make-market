@@ -89,6 +89,11 @@ class OrderBook:
             return None
         return (top_ask + top_bid) / 2
 
+    # create a method to get number of levels in the orderbook, should return a tuple
+    @property
+    def n_levels(self) -> tuple[int, int]:
+        return len(self.ask_prices), len(self.bid_prices)
+
     # create a method to serialize the orderbook to a dictionary
     def to_dict(self) -> OrderBookDict:
         return OrderBookDict(

@@ -239,3 +239,18 @@ def test_orderbook_from_dict() -> None:
     assert orderbook.ask_sizes == [10.0, 15.0]
     assert orderbook.bid_prices == [99.0, 98.0]
     assert orderbook.bid_sizes == [20.0, 25.0]
+
+
+def test_orderbook_n_levels() -> None:
+    orderbook = OrderBook(
+        ask_prices=[100.0, 101.0, 102.0],
+        ask_sizes=[10.0, 15.0, 20.0],
+        bid_prices=[99.0, 98.0],
+        bid_sizes=[20.0, 25.0],
+    )
+    assert orderbook.n_levels == (3, 2)
+
+
+def test_empty_orderbook_n_levels() -> None:
+    empty_orderbook = OrderBook()
+    assert empty_orderbook.n_levels == (0, 0)
