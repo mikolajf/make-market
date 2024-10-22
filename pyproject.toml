@@ -4,12 +4,15 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "websockets>=13.1",
+]
 
 [tool.uv]
 dev-dependencies = [
     "mypy>=1.12.0",
     "polylith-cli>=1.20.1",
+    "pytest-asyncio>=0.24.0",
     "pytest>=8.3.3",
     "ruff>=0.6.9",
 ]
@@ -39,3 +42,6 @@ select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.pyright]
 extraPaths = ["bases", "components"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
