@@ -10,6 +10,7 @@ dependencies = []
 dev-dependencies = [
     "mypy>=1.12.0",
     "polylith-cli>=1.20.1",
+    "pre-commit>=4.0.1",
     "pytest>=8.3.3",
     "ruff>=0.6.9",
 ]
