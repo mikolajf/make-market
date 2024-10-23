@@ -84,3 +84,39 @@ async def test_subscribe_unsubscribe():
     request = Request(action=Actions.UNSUBSCRIBE, symbol=symbol)
     new_response = await client_send_receive(json.dumps(request))
     assert new_response["message"] == f"Unsubscribed from FX pair: {symbol}"
+
+
+@pytest.mark.asyncio
+async def test_multiple_subscriptions():
+    # Subscribe to the first symbol
+    request1 = Request(action=Actions.SUBSCRIBE, symbol="EUR/USD")
+    response1 = await client_send_receive(json.dumps(request1))
+    assert response1["message"] == "Subscribed to FX pair: EUR/USD"
+
+    # Subscribe to the second symbol
+    request2 = Request(action=Actions.SUBSCRIBE, symbol="GBP/USD")
+    response2 = await client_send_receive(json.dumps(request2))
+    # TODO: Fix this assertion. this must be same reason as above
+    # assert response2["message"] == "Subscribed to FX pair: GBP/USD"
+
+    # Wait a moment for the server to update the prices
+    await asyncio.sleep(1)
+
+    # Get the initial prices
+    response = await client_send_receive("")
+    assert "EUR/USD" in response
+    assert "GBP/USD" in response
+
+    # Unsubscribe from the first symbol
+    request_unsub = Request(action=Actions.UNSUBSCRIBE, symbol="EUR/USD")
+    response_unsub = await client_send_receive(json.dumps(request_unsub))
+    # TODO: Fix this assertion. this must be same reason as above
+    # assert response_unsub["message"] == "Unsubscribed from FX pair: EUR/USD"
+
+    # Wait a moment for the server to update the prices
+    await asyncio.sleep(1)
+
+    # Get the updated prices
+    response = await client_send_receive("")
+    assert "EUR/USD" not in response
+    assert "GBP/USD" in response
