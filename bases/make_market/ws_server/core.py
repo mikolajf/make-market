@@ -1,84 +1,65 @@
 import asyncio
 import json
+from queue import Empty
 import random
-from typing import Any, Dict, TypedDict
+from enum import StrEnum
+from typing import TypedDict
 
 import websockets
 from make_market.log.core import get_logger
+from make_market.orderbook.core import OrderBook
 
 # setup logger
 logger = get_logger("ws_server")
 
 
-# Define a type for FX pair data
-class FXPairData(TypedDict):
-    price: float
-    drift: float
-    volatility: float
+class Actions(StrEnum):
+    SUBSCRIBE = "subscribe"
+    UNSUBSCRIBE = "unsubscribe"
 
 
-# Dictionary to store FX pairs with their price, drift, and volatility
-fx_pairs: Dict[str, FXPairData] = {}
-
-# Simulated FX pairs and their base prices
-fx_prices = {
-    "EUR/USD": {"price": 0.8500, "drift": 0.0002, "volatility": 0.0005},
-}
+class Request(TypedDict):
+    action: Actions
+    symbol: str
 
 
-def get_updated_price(pair_data: FXPairData) -> float:
-    """
-    Simulate price update based on drift and volatility.
-
-    :param pair_data: Dictionary containing price, drift, and volatility for an FX pair.
-    :return: Updated FX pair price.
-    """
-    base_price: float = pair_data["price"]
-    drift: float = pair_data["drift"]
-    volatility: float = pair_data["volatility"]
-
-    # Simulate price drift and volatility (random fluctuation)
-    drift_effect: float = drift * random.uniform(
-        0.95, 1.05
-    )  # Slight random factor to drift
-    volatility_effect: float = random.uniform(-volatility, volatility)
-
-    new_price: float = base_price + drift_effect + volatility_effect
-    return round(new_price, 5)
-
-
-def update_fx_prices() -> None:
-    """
-    Update prices for all FX pairs in the fx_pairs dictionary.
-    """
-    for pair, data in fx_prices.items():
-        updated_price: float = get_updated_price(data)
-        fx_prices[pair]["price"] = updated_price
+# Set to store FX symbols
+subscriptions: set[str] = set()
 
 
 async def consumer_handler(
     websocket: websockets.WebSocketServerProtocol,
 ) -> None:
     """Consumer handler, parses messages received from customers."""
+    logger.debug("Consumer handler started.")
     try:
         async for message in websocket:
             try:
-                request: Dict[str, Any] = json.loads(message)
+                logger.debug(f"Received message: {message}")
+                request: Request = json.loads(message)
 
-                if "pair" in request and "price" in request:
-                    pair: str = request["pair"]
-                    price: float = request["price"]
-                    drift: float = request.get("drift", 0.0)
-                    volatility: float = request.get("volatility", 0.001)
+                if "action" in request:
+                    action = request["action"]
+                    symbol = request.get("symbol")
 
-                    fx_prices[pair] = {
-                        "price": price,
-                        "drift": drift,
-                        "volatility": volatility,
-                    }
-                    logger.info(
-                        f"Added new FX pair: {pair} (Price: {price}, Drift: {drift}, Volatility: {volatility})"
-                    )
+                    if action == Actions.SUBSCRIBE and symbol:
+                        if symbol not in subscriptions:
+                            subscriptions.add(symbol)
+                            msg = f"Subscribed to FX pair: {symbol}"
+
+                            # send message to the client
+                            await websocket.send(json.dumps({"message": msg}))
+                            logger.info(msg)
+
+                        else:
+                            msg = f"Already subscribed to FX pair: {symbol}"
+                            # send message to the client
+                            await websocket.send(json.dumps({"message": msg}))
+                            logger.info(msg)
+
+                    elif action == Actions.UNSUBSCRIBE and symbol:
+                        subscriptions.discard(symbol)
+                        logger.info(f"Unsubscribed from FX pair: {symbol}")
 
             except json.JSONDecodeError:
                 logger.info("Received invalid message, ignoring.")
@@ -94,17 +75,22 @@ async def fx_price_publisher(
 
     :param websocket: The WebSocket connection.
     """
-    logger.info("Client connected")
-
     while True:
-        if fx_prices:
-            # Update FX prices
-            update_fx_prices()
-            logger.info(f"Updated prices: {fx_prices}")
+        if subscriptions:
+            message = {}
+            for symbol in subscriptions:
+                # get random midprice and spread
+                m = random.uniform(1.0, 2.0)  # midprice
+                s = random.uniform(0.01, 0.05)  # spread
+
+                # create orderbook
+                orderbook = OrderBook.random(midprice=m, spread=s)
+
+                message[symbol] = orderbook.to_dict()
 
             try:
                 # Send updated prices to the client
-                await websocket.send(json.dumps(fx_prices))
+                await websocket.send(json.dumps(message))
             except websockets.exceptions.ConnectionClosed:
                 logger.info("Client disconnected.")
                 break
@@ -120,7 +106,7 @@ async def handler(websocket: websockets.WebSocketServerProtocol) -> None:
     )
 
 
-async def main() -> None:
+async def websocket_server() -> None:
     """
     Main function to start the WebSocket server.
     """
@@ -129,5 +115,25 @@ async def main() -> None:
         await asyncio.Future()  # Run forever
 
 
+async def coordinate(q):
+    server = asyncio.create_task(websocket_server())
+    while True:
+        await asyncio.sleep(
+            0
+        )  # this is necessary to allow the asyncio loop to switch tasks.
+        try:
+            q.get_nowait()
+        except Empty:
+            pass
+        else:  # block will run whenever there is _any_ message in the queue.
+            server.cancel()
+            return
+    server.cancel()
+
+
+def run_webscoket_server(q: asyncio.Queue) -> None:
+    asyncio.run(coordinate(q))
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(websocket_server())
