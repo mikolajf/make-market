@@ -106,34 +106,14 @@ async def handler(websocket: websockets.WebSocketServerProtocol) -> None:
     )
 
 
-async def websocket_server() -> None:
+async def run_websocket_server(port: int = 8765) -> None:
     """
     Main function to start the WebSocket server.
     """
-    async with websockets.serve(handler, "localhost", 8765):
-        logger.info("WebSocket server started on ws://localhost:8765")
+    async with websockets.serve(handler, "localhost", port):
+        logger.info(f"WebSocket server started on ws://localhost:{port}")
         await asyncio.Future()  # Run forever
 
 
-async def coordinate(q):
-    server = asyncio.create_task(websocket_server())
-    while True:
-        await asyncio.sleep(
-            0
-        )  # this is necessary to allow the asyncio loop to switch tasks.
-        try:
-            q.get_nowait()
-        except Empty:
-            pass
-        else:  # block will run whenever there is _any_ message in the queue.
-            server.cancel()
-            return
-    server.cancel()
-
-
-def run_webscoket_server(q: asyncio.Queue) -> None:
-    asyncio.run(coordinate(q))
-
-
 if __name__ == "__main__":
-    asyncio.run(websocket_server())
+    asyncio.run(run_websocket_server())
