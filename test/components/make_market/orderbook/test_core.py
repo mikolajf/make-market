@@ -254,3 +254,6 @@ def test_orderbook_n_levels() -> None:
 def test_empty_orderbook_n_levels() -> None:
     empty_orderbook = OrderBook()
     assert empty_orderbook.n_levels == (0, 0)
+
+
+print(1)

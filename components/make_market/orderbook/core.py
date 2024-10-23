@@ -1,5 +1,5 @@
-import random
 from dataclasses import dataclass, field
+from random import uniform
 from typing import Self, TypedDict
 
 
@@ -107,17 +107,18 @@ class OrderBook:
         ask_prices = [
             midprice
             + (i + 1) * spread
-            + random.uniform(-spread_variation, spread_variation)  # noqa: S311
+            + uniform(-spread_variation, spread_variation)  # noqa: S311
             for i in range(n_ask_levels)
         ]
-        ask_sizes = [random.uniform(5.0, 15.0) for i in range(n_ask_levels)]  # noqa: S311
+        ask_sizes = [uniform(5.0, 15.0) for i in range(n_ask_levels)]  # noqa: S311
+
         bid_prices = [
             midprice
             - (i + 1) * spread
-            + random.uniform(-spread_variation, spread_variation)  # noqa: S311
+            + uniform(-spread_variation, spread_variation)  # noqa: S311
             for i in range(n_bid_levels)
         ]
-        bid_sizes = [random.uniform(5.0, 15.0) for i in range(n_bid_levels)]  # noqa: S311
+        bid_sizes = [uniform(5.0, 15.0) for i in range(n_bid_levels)]  # noqa: S311
 
         return cls(ask_prices, ask_sizes, bid_prices, bid_sizes)
 

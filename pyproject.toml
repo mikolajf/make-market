@@ -32,6 +32,7 @@ exclude = [
     "dist",
     ".venv",
     "./development/*.py",
+    "./test/**/*.py",
 ]
 line-length = 80
 
@@ -57,6 +58,7 @@ ignore = [
     "D107",  # Missing docstring in __init__
     "D200",  # One-line docstring should fit on one line with quotes
     "D205",  # 1 blank line required between summary line and description
+    "D203",  # No blank lines allowed before class docstring
     "D212",  # Multi-line docstring summary should start at the first line
     "D400",  # First line should end with a period
     "D401",  # First line should be in imperative mood
@@ -70,6 +72,7 @@ ignore = [
     "S101",   # ignore use of assert
     "PLR2004", # ignore use of print
 ]
+
 
 [tool.pyright]
 extraPaths = ["bases", "components"]
