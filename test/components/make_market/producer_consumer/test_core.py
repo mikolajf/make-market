@@ -2,11 +2,14 @@ import asyncio
 import random
 
 import pytest
+from make_market.log.core import get_logger
 from make_market.producer_consumer import (
     ConfigurationServiceProtocol,
     ConsumerProtocol,
     ProducerProtocol,
 )
+
+logger = get_logger("test_logger")
 
 
 class ConfigurationService(ConfigurationServiceProtocol):
@@ -20,7 +23,7 @@ class ConfigurationService(ConfigurationServiceProtocol):
     async def simulate_config_changes(self) -> None:
         await asyncio.sleep(1)  # Simulate time delay for config changes
         self.config["active"] = False
-        print(f"Configuration changed: {self.config}")
+        logger.info(f"Configuration changed: {self.config}")
         for listener in self.listeners:
             await listener.on_config_change(self.config)
 
@@ -35,14 +38,10 @@ class Producer(ProducerProtocol):
         self.config_service.register_listener(self)
 
     async def connect(self) -> None:
-        # Simulate WebSocket connection
-        await asyncio.sleep(1)
-        print("Connected to WebSocket")
+        logger.info("Connected to WebSocket")
 
     async def disconnect(self) -> None:
-        # Simulate WebSocket disconnection
-        await asyncio.sleep(1)
-        print("Disconnected from WebSocket")
+        logger.info("Disconnected from WebSocket")
 
     async def produce(self) -> None:
         await self.connect()
@@ -51,8 +50,8 @@ class Producer(ProducerProtocol):
                 data = random.randint(
                     1, 100
                 )  # Simulate receiving data from WebSocket
-                print(f"Produced: {data}")
-                self.queue.put(data)
+                logger.info(f"Produced: {data}")
+                await self.queue.put(data)
             await asyncio.sleep(1)  # Simulate time delay
 
     async def on_config_change(self, config: dict) -> None:
@@ -103,6 +102,36 @@ async def test_producer_responds_to_config_changes():
 
 
 @pytest.mark.asyncio
+async def test_producer_produces_data():
+    queue = asyncio.Queue()
+    config_service = ConfigurationService()
+    producer = Producer(queue, config_service)
+
+    async def produce_data():
+        await producer.produce()
+
+    # Run the producer in the background
+    producer_task = asyncio.create_task(produce_data())
+
+    # Allow some time for the producer to produce data
+    await asyncio.sleep(2)
+
+    # Check if the queue has data
+    assert not queue.empty()
+
+    # Retrieve data from the queue and check if it's within the expected range
+    data = await queue.get()
+    assert 1 <= data <= 100
+
+    # Cancel the producer task to clean up
+    producer_task.cancel()
+    try:
+        await producer_task
+    except asyncio.CancelledError:
+        pass
+
+
+@pytest.mark.asyncio
 async def test_consumer():
     queue = asyncio.Queue()
 
@@ -114,15 +143,16 @@ async def test_consumer():
         async def consume(self) -> None:
             while True:
                 data = await self.get_data()
-                print(f"Consumer {self.consumer_id} consumed: {data}")
+                logger.info(f"Consumer {self.consumer_id} consumed: {data}")
                 assert data > 0
 
         async def get_data(self) -> int:
             while self.queue.empty():
                 await asyncio.sleep(0.1)
-            return self.queue.get()
+            return await self.queue.get()
 
     consumer = Consumer(queue, 1)
 
     await queue.put(42)
     data = await consumer.get_data()
+    assert data == 42
