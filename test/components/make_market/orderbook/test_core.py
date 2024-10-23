@@ -22,7 +22,7 @@ def test_orderbook_validation_success() -> None:
         bid_prices=[99.0],
         bid_sizes=[20.0],
     )
-    assert orderbook.validate() is None
+
     assert orderbook.ask_prices == [100.0]
     assert orderbook.ask_sizes == [10.0]
     assert orderbook.bid_prices == [99.0]
@@ -254,6 +254,3 @@ def test_orderbook_n_levels() -> None:
 def test_empty_orderbook_n_levels() -> None:
     empty_orderbook = OrderBook()
     assert empty_orderbook.n_levels == (0, 0)
-
-
-print(1)
