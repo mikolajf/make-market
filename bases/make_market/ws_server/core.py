@@ -62,6 +62,8 @@ async def consumer_handler(
             except json.JSONDecodeError:
                 logger.info("Received invalid message, ignoring.")
     except websockets.exceptions.ConnectionClosed:
+        # clear subscriptions when client disconnects
+        subscriptions.clear()
         logger.info("Client disconnected.")
 
 
@@ -90,6 +92,8 @@ async def fx_price_publisher(
                 # Send updated prices to the client
                 await websocket.send(json.dumps(message))
             except websockets.exceptions.ConnectionClosed:
+                # clear subscriptions when client disconnects
+                subscriptions.clear()
                 logger.info("Client disconnected.")
                 break
 
