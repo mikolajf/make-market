@@ -99,7 +99,9 @@ async def fx_price_publisher(
         await asyncio.sleep(1)
 
 
-async def handler(websocket: websockets.WebSocketServerProtocol) -> None:
+async def websocket_handler(
+    websocket: websockets.WebSocketServerProtocol,
+) -> None:
     await asyncio.gather(
         consumer_handler(websocket),
         fx_price_publisher(websocket),
@@ -110,7 +112,7 @@ async def run_websocket_server(port: int = 8765) -> None:
     """
     Main function to start the WebSocket server.
     """
-    async with websockets.serve(handler, "localhost", port):
+    async with websockets.serve(websocket_handler, "localhost", port):
         logger.info(f"WebSocket server started on ws://localhost:{port}")
         await asyncio.Future()  # Run forever
 

@@ -1,17 +1,14 @@
 import asyncio
 import json
-import threading
 import uuid
 
 import pytest
 import pytest_asyncio
 import websockets
-
 from make_market.ws_server.core import (
     Actions,
     Request,
-    handler,
-    run_webscoket_server,
+    websocket_handler,
 )
 
 # Test WebSocket server setup
@@ -20,7 +17,7 @@ WEBSOCKET_URL = "ws://localhost:8765"
 
 @pytest_asyncio.fixture(autouse=True, scope="function")
 async def run_server():
-    async with websockets.serve(handler, "localhost", 8765):
+    async with websockets.serve(websocket_handler, "localhost", 8765):
         yield
 
 
