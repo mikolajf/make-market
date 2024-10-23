@@ -1,6 +1,5 @@
 import asyncio
 import json
-from queue import Empty
 import random
 from enum import StrEnum
 from typing import TypedDict
@@ -47,19 +46,18 @@ async def consumer_handler(
                             subscriptions.add(symbol)
                             msg = f"Subscribed to FX pair: {symbol}"
 
-                            # send message to the client
-                            await websocket.send(json.dumps({"message": msg}))
-                            logger.info(msg)
-
                         else:
                             msg = f"Already subscribed to FX pair: {symbol}"
-                            # send message to the client
-                            await websocket.send(json.dumps({"message": msg}))
-                            logger.info(msg)
 
                     elif action == Actions.UNSUBSCRIBE and symbol:
                         subscriptions.discard(symbol)
-                        logger.info(f"Unsubscribed from FX pair: {symbol}")
+                        msg = f"Unsubscribed from FX pair: {symbol}"
+
+                    else:
+                        msg = "Invalid action or symbol."
+
+                    await websocket.send(json.dumps({"message": msg}))
+                    logger.info(msg)
 
             except json.JSONDecodeError:
                 logger.info("Received invalid message, ignoring.")

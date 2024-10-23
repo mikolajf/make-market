@@ -6,5 +6,8 @@
     "python.testing.pytestEnabled": true,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.ruff": "always"
+    }
 }

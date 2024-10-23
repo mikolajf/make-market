@@ -82,5 +82,5 @@ async def test_subscribe_unsubscribe():
 
     # Unsubscribe from the symbol
     request = Request(action=Actions.UNSUBSCRIBE, symbol=symbol)
-    response = await client_send_receive(json.dumps(request))
-    assert response["message"] == f"Unsubscribed from FX pair: {symbol}"
+    new_response = await client_send_receive(json.dumps(request))
+    assert new_response["message"] == f"Unsubscribed from FX pair: {symbol}"
