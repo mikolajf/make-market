@@ -13,11 +13,22 @@ logger = get_logger("ws_server")
 
 
 class Actions(StrEnum):
+    """Enumeration for possible actions in the WebSocket server."""
+
     SUBSCRIBE = "subscribe"
     UNSUBSCRIBE = "unsubscribe"
 
 
 class Request(TypedDict):
+    """
+    Request is a TypedDict that represents the structure of a request in the system.
+
+    Attributes:
+        action (Actions): The action to be performed, represented by an instance of the Actions enum.
+        symbol (str): The symbol associated with the request, typically representing a financial instrument.
+
+    """
+
     action: Actions
     symbol: str
 
@@ -34,7 +45,7 @@ async def consumer_handler(
     try:
         async for message in websocket:
             try:
-                logger.debug(f"Received message: {message}")
+                logger.debug("Received message.")
                 request: Request = json.loads(message)
 
                 if "action" in request:
@@ -80,8 +91,8 @@ async def fx_price_publisher(
             message = {}
             for symbol in subscriptions:
                 # get random midprice and spread
-                m = random.uniform(1.0, 2.0)  # midprice
-                s = random.uniform(0.01, 0.05)  # spread
+                m = random.uniform(1.0, 2.0)  # midprice  # noqa: S311
+                s = random.uniform(0.01, 0.05)  # spread  # noqa: S311
 
                 # create orderbook
                 orderbook = OrderBook.random(midprice=m, spread=s)
@@ -104,6 +115,17 @@ async def fx_price_publisher(
 async def websocket_handler(
     websocket: websockets.WebSocketServerProtocol,
 ) -> None:
+    """
+    Handles incoming WebSocket connections and concurrently runs the consumer handler
+    and FX price publisher.
+
+    Args:
+        websocket (websockets.WebSocketServerProtocol): The WebSocket connection instance.
+
+    Returns:
+        None
+
+    """
     await asyncio.gather(
         consumer_handler(websocket),
         fx_price_publisher(websocket),

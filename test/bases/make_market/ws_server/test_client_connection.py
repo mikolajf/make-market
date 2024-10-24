@@ -5,11 +5,7 @@ import uuid
 import pytest
 import pytest_asyncio
 import websockets
-from make_market.ws_server.core import (
-    Actions,
-    Request,
-    websocket_handler,
-)
+from make_market.ws_server.core import Actions, Request, websocket_handler
 
 # Test WebSocket server setup
 WEBSOCKET_URL = "ws://localhost:8765"
@@ -132,9 +128,7 @@ async def test_multiple_subscriptions(websocket_client: WebSocketClient):
 
     # Unsubscribe from the first symbol
     request_unsub = Request(action=Actions.UNSUBSCRIBE, symbol="EUR/USD")
-    response_unsub = await websocket_client.send_receive(
-        json.dumps(request_unsub)
-    )
+    response_unsub = await websocket_client.send_receive(json.dumps(request_unsub))
     assert response_unsub["message"] == "Unsubscribed from FX pair: EUR/USD"
 
     # Wait a moment for the server to update the prices

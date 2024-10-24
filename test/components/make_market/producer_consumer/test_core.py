@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import random
 
 import pytest
@@ -47,9 +48,7 @@ class Producer(ProducerProtocol):
         await self.connect()
         while True:
             if self.active:
-                data = random.randint(
-                    1, 100
-                )  # Simulate receiving data from WebSocket
+                data = random.randint(1, 100)  # Simulate receiving data from WebSocket
                 logger.info(f"Produced: {data}")
                 await self.queue.put(data)
             await asyncio.sleep(1)  # Simulate time delay
@@ -125,10 +124,8 @@ async def test_producer_produces_data():
 
     # Cancel the producer task to clean up
     producer_task.cancel()
-    try:
+    with contextlib.suppress(asyncio.CancelledError):
         await producer_task
-    except asyncio.CancelledError:
-        pass
 
 
 @pytest.mark.asyncio

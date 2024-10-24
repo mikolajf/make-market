@@ -1,7 +1,7 @@
 from make_market.producer_consumer.protocols import (
+    ConfigurationServiceProtocol,
     ConsumerProtocol,
     ProducerProtocol,
-    ConfigurationServiceProtocol,
 )
 
 __all__ = [
