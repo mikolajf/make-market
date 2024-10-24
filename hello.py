@@ -1,5 +1,6 @@
 def main():
-    print("Hello from make-market!")
+    """Main function that prints a greeting message."""
+    print("Hello from make-market!")  # noqa: T201
 
 
 if __name__ == "__main__":
