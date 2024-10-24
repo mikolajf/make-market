@@ -4,6 +4,17 @@ from pathlib import Path
 
 
 def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
+    """
+    Create and configure a logger with the given name and level.
+
+    Args:
+        name (str): The name of the logger.
+        level (int): The logging level (default is logging.INFO).
+
+    Returns:
+        logging.Logger: The configured logger.
+
+    """
     logger = logging.getLogger(name)
 
     # setup formatter
@@ -15,7 +26,7 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     stream_handler.setFormatter(formatter)
 
     # file handler
-    # TODO get from settings
+    # TODO: get from settings
     log_dir = Path(__file__).parent.parent.parent.parent / "logs"
     log_dir.mkdir(exist_ok=True)
     file_handler = logging.handlers.TimedRotatingFileHandler(

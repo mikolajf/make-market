@@ -1,0 +1,33 @@
+name: Example
+
+on: [pull_request]
+
+jobs:
+  uv-example:
+    name: python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+            enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+    #   - name: Run tests for code that has been changed
+    #     run: |
+    #       changes="$(uv run poly diff --bricks --short)"
+    #       echo $changes
+    #       query="${changes//,/ or }"
+    #       uv run pytest -k <<< echo "$query"
+
+      - name: Run tests
+        # For example, using `pytest`
+        run: uv run pytest
