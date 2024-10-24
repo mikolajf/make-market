@@ -78,6 +78,7 @@ ignore = [
 [tool.ruff.lint.extend-per-file-ignores]
 "test/**/*.py" = [
     # at least this three should be fine in tests:
+    "D102", 
     "D103", # Missing docstring in public function
     "S101", # asserts allowed in tests...
     "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
