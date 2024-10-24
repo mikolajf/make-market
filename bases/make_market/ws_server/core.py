@@ -75,7 +75,7 @@ async def consumer_handler(
     except websockets.exceptions.ConnectionClosed:
         # clear subscriptions when client disconnects
         subscriptions.clear()
-        logger.info("Client disconnected.")
+        logger.info("Client disconnected inside consumer_handler.")
 
 
 async def fx_price_publisher(
@@ -105,7 +105,7 @@ async def fx_price_publisher(
             except websockets.exceptions.ConnectionClosed:
                 # clear subscriptions when client disconnects
                 subscriptions.clear()
-                logger.info("Client disconnected.")
+                logger.info("Client disconnected inside fx_price_publisher.")
                 break
 
         # Wait for a second before the next update
