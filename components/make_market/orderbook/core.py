@@ -110,7 +110,7 @@ class OrderBook:
             + uniform(-spread_variation, spread_variation)  # noqa: S311
             for i in range(n_ask_levels)
         ]
-        ask_sizes = [uniform(5.0, 15.0) for i in range(n_ask_levels)]  # noqa: S311
+        ask_sizes = [uniform(5.0, 15.0) for _ in range(n_ask_levels)]  # noqa: S311
 
         bid_prices = [
             midprice
@@ -118,7 +118,7 @@ class OrderBook:
             + uniform(-spread_variation, spread_variation)  # noqa: S311
             for i in range(n_bid_levels)
         ]
-        bid_sizes = [uniform(5.0, 15.0) for i in range(n_bid_levels)]  # noqa: S311
+        bid_sizes = [uniform(5.0, 15.0) for _ in range(n_bid_levels)]  # noqa: S311
 
         return cls(ask_prices, ask_sizes, bid_prices, bid_sizes)
 
