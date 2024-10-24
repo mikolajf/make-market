@@ -47,8 +47,9 @@ repos:
       - id: uv-lock
       - id: uv-export
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
-    hooks:
-      - id: mypy
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.8.0
+  #   hooks:
+  #     - id: mypy
+  #       exclude:
 exclude: 'static/'

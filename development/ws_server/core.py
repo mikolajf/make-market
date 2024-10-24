@@ -1,7 +1,7 @@
 import asyncio
 import json
 import random
-from typing import Any, Dict, TypedDict
+from typing import Any, TypedDict
 
 import websockets
 from make_market.log.core import get_logger
@@ -18,7 +18,7 @@ class FXPairData(TypedDict):
 
 
 # Dictionary to store FX pairs with their price, drift, and volatility
-fx_pairs: Dict[str, FXPairData] = {}
+fx_pairs: dict[str, FXPairData] = {}
 
 # Simulated FX pairs and their base prices
 fx_prices = {
@@ -63,7 +63,7 @@ async def consumer_handler(
     try:
         async for message in websocket:
             try:
-                request: Dict[str, Any] = json.loads(message)
+                request: dict[str, Any] = json.loads(message)
 
                 if "pair" in request and "price" in request:
                     pair: str = request["pair"]
