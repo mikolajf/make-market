@@ -105,17 +105,13 @@ class OrderBook:
         spread_variation = spread * 0.1  # 10% variation in spread
 
         ask_prices = [
-            midprice
-            + (i + 1) * spread
-            + uniform(-spread_variation, spread_variation)  # noqa: S311
+            midprice + (i + 1) * spread + uniform(-spread_variation, spread_variation)  # noqa: S311
             for i in range(n_ask_levels)
         ]
         ask_sizes = [uniform(5.0, 15.0) for _ in range(n_ask_levels)]  # noqa: S311
 
         bid_prices = [
-            midprice
-            - (i + 1) * spread
-            + uniform(-spread_variation, spread_variation)  # noqa: S311
+            midprice - (i + 1) * spread + uniform(-spread_variation, spread_variation)  # noqa: S311
             for i in range(n_bid_levels)
         ]
         bid_sizes = [uniform(5.0, 15.0) for _ in range(n_bid_levels)]  # noqa: S311
