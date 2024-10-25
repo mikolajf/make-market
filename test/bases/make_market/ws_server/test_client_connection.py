@@ -5,7 +5,7 @@ import uuid
 import pytest
 import pytest_asyncio
 import websockets
-from make_market.ws_server.core import Actions, Request, websocket_handler
+from make_market.ws_server import Actions, Request, websocket_handler
 
 # Test WebSocket server setup
 WEBSOCKET_URL = "ws://localhost:8765"
