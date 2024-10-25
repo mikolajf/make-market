@@ -5,6 +5,7 @@ import random
 import websockets
 from make_market.log.core import get_logger
 from make_market.orderbook.core import OrderBook
+from make_market.settings.models import Settings
 from make_market.ws_server.types import Actions, Request
 
 # setup logger
@@ -13,6 +14,9 @@ logger = get_logger("ws_server")
 
 # Set to store FX symbols
 subscriptions: set[str] = set()
+
+# fetch settings from central store
+settings = Settings().vendor_websocket
 
 
 async def consumer_handler(
@@ -94,7 +98,7 @@ async def fx_price_publisher(
                 break
 
         # Wait for a second before the next update
-        await asyncio.sleep(1)
+        await asyncio.sleep(settings.THROTTHLE_INTERVAL)
 
 
 async def websocket_handler(

@@ -6,6 +6,7 @@ import pytest
 import pytest_asyncio
 import websockets
 from make_market.ws_server import Actions, Request, websocket_handler
+from make_market.ws_server.server import settings
 
 # Test WebSocket server setup
 WEBSOCKET_URL = "ws://localhost:8765"
@@ -83,7 +84,7 @@ async def test_price_updates(websocket_client: WebSocketClient):
     initial_price = response[symbol]["ask_prices"][0]
 
     # Wait a moment for the server to update the price
-    await asyncio.sleep(1)
+    await asyncio.sleep(settings.THROTTHLE_INTERVAL)
 
     # Send another message to receive updated prices
     response = await websocket_client.receive()
@@ -146,7 +147,7 @@ async def test_multiple_subscriptions(websocket_client: WebSocketClient):
     assert response2["message"] == "Subscribed to FX pair: GBP/USD"
 
     # Wait a moment for the server to update the prices
-    await asyncio.sleep(1)
+    await asyncio.sleep(settings.THROTTHLE_INTERVAL)
 
     # Get the initial prices
     response = await websocket_client.receive()
@@ -159,7 +160,7 @@ async def test_multiple_subscriptions(websocket_client: WebSocketClient):
     assert response_unsub["message"] == "Unsubscribed from FX pair: JPY/USD"
 
     # Wait a moment for the server to update the prices
-    await asyncio.sleep(1)
+    await asyncio.sleep(settings.THROTTHLE_INTERVAL)
 
     # Get the updated prices
     response = await websocket_client.receive()
