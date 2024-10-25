@@ -7,6 +7,10 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",
     "files.autoSave": "afterDelay",
+    "python.analysis.extraPaths": [
+        "bases",
+        "components"
+    ],
     "editor.codeActionsOnSave": {
         "source.organizeImports.ruff": "always"
     }
