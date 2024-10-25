@@ -10,5 +10,8 @@
     "python.analysis.extraPaths": [
         "bases",
         "components"
-    ]
+    ],
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.ruff": "always"
+    }
 }

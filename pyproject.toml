@@ -36,7 +36,7 @@ exclude = [
     ".venv",
     "./development/*.py",
 ]
-line-length = 80
+line-length = 88
 
 [tool.ruff.lint]
 select = [
@@ -52,7 +52,9 @@ ignore = [
     "T10", # debugger
     "TID", # flake8-tidy-imports
 
+
     #### specific rules
+    "ASYNC110",
     "D100",  # Missing docstring in public module
     "D104",  # Missing docstring in public package
     "D105",  # Missing docstring in magic method
@@ -67,17 +69,22 @@ ignore = [
     "D415",  # First line should end with a period, question mark, or exclamation point
     "E402",   # false positives for local imports
     "E501",   # line too long
+    "EM101",
+    "G004",
     "TRY003", # external messages in exceptions are too verbose
     "TD002",
     "TD003",
     "FIX002", # too verbose descriptions of todos,
     "S101",   # ignore use of assert
     "PLR2004", # ignore use of print
+    "ISC001"
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
 "test/**/*.py" = [
     # at least this three should be fine in tests:
+    "D101",
+    "D102",
     "D103", # Missing docstring in public function
     "S101", # asserts allowed in tests...
     "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
