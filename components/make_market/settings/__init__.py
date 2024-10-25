@@ -1,3 +1,3 @@
-from make_market.settings import core
+from make_market.settings.models import Settings
 
-__all__ = ["core"]
+__all__ = ["Settings"]
