@@ -18,5 +18,8 @@
         "activityBar.background": "#62001E",
         "titleBar.activeBackground": "#89012A",
         "titleBar.activeForeground": "#FFFBFC"
+    },
+    "files.exclude": {
+        "**/__pycache__": true
     }
 }
