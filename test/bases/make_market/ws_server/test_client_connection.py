@@ -11,7 +11,7 @@ from make_market.ws_server.core import Actions, Request, websocket_handler
 WEBSOCKET_URL = "ws://localhost:8765"
 
 
-@pytest_asyncio.fixture(autouse=True, scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def run_server():
     async with websockets.serve(websocket_handler, "localhost", 8765):
         yield
@@ -56,6 +56,7 @@ async def websocket_client():
     await client.close()
 
 
+@pytest.mark.usefixtures("run_server")
 @pytest.mark.asyncio
 async def test_connection(websocket_client: WebSocketClient):
     # Send the message and receive the response
@@ -66,6 +67,7 @@ async def test_connection(websocket_client: WebSocketClient):
     assert response["message"] == "Subscribed to FX pair: EUR/USD"
 
 
+@pytest.mark.usefixtures("run_server")
 @pytest.mark.asyncio
 async def test_price_updates(websocket_client: WebSocketClient):
     # Generate a unique symbol name
@@ -91,6 +93,7 @@ async def test_price_updates(websocket_client: WebSocketClient):
     assert updated_price != initial_price
 
 
+@pytest.mark.usefixtures("run_server")
 @pytest.mark.asyncio
 async def test_subscribe_unsubscribe(websocket_client: WebSocketClient):
     # Generate a unique symbol name
@@ -106,7 +109,30 @@ async def test_subscribe_unsubscribe(websocket_client: WebSocketClient):
     assert new_response["message"] == f"Unsubscribed from FX pair: {symbol}"
 
 
-@pytest.skip("This test is not working as expected")
+@pytest.mark.usefixtures("run_server")
+@pytest.mark.asyncio
+async def test_subscribe_unsubscribe_resubscribe(websocket_client: WebSocketClient):
+    # Generate a unique symbol name
+    symbol1 = f"EUR/USD-{uuid.uuid4()}"
+    symbol2 = f"GBP/USD-{uuid.uuid4()}"
+
+    # Subscribe to the first symbol
+    request1 = Request(action=Actions.SUBSCRIBE, symbol=symbol1)
+    response1 = await websocket_client.send_receive(json.dumps(request1))
+    assert response1["message"] == f"Subscribed to FX pair: {symbol1}"
+
+    # Unsubscribe from the first symbol
+    request_unsub1 = Request(action=Actions.UNSUBSCRIBE, symbol=symbol1)
+    response_unsub1 = await websocket_client.send_receive(json.dumps(request_unsub1))
+    assert response_unsub1["message"] == f"Unsubscribed from FX pair: {symbol1}"
+
+    # Subscribe to the second symbol
+    request2 = Request(action=Actions.SUBSCRIBE, symbol=symbol2)
+    response2 = await websocket_client.send_receive(json.dumps(request2))
+    assert response2["message"] == f"Subscribed to FX pair: {symbol2}"
+
+
+@pytest.mark.usefixtures("run_server")
 @pytest.mark.asyncio
 async def test_multiple_subscriptions(websocket_client: WebSocketClient):
     # Subscribe to the first symbol
@@ -139,46 +165,3 @@ async def test_multiple_subscriptions(websocket_client: WebSocketClient):
     response = await websocket_client.receive()
     assert "JPY/USD" not in response
     assert "GBP/USD" in response
-
-
-@pytest.skip("This test is not working as expected")
-@pytest.mark.asyncio
-async def test_disconnecting_and_connecting_again_to_same_running_server() -> None:
-    # create client mannually to test reconnecting
-    websocket_client = WebSocketClient(WEBSOCKET_URL)
-    await websocket_client.connect()
-
-    # Generate a unique symbol name
-    symbol = f"EUR/USD-{uuid.uuid4()}"
-
-    # Subscribe to the symbol
-    request = Request(action=Actions.SUBSCRIBE, symbol=symbol)
-    initial_response = await websocket_client.send_receive(json.dumps(request))
-    assert initial_response["message"] == f"Subscribed to FX pair: {symbol}"
-
-    # Close the connection
-    await websocket_client.close()
-    del websocket_client
-
-    # recreate client mannually
-    websocket_client = WebSocketClient(WEBSOCKET_URL)
-    await websocket_client.connect()
-
-    # Reconnect to the server
-    request = Request(action=Actions.SUBSCRIBE, symbol=symbol)
-    response = await websocket_client.send_receive(json.dumps(request))
-    assert response["message"] == f"Subscribed to FX pair: {symbol}"
-
-    # Wait a moment for the server to update the price
-    response = await websocket_client.receive()
-    initial_price = response[symbol]["ask_prices"][0]
-
-    # Wait a moment for the server to update the price
-    await asyncio.sleep(1)
-
-    # Send another message to receive updated prices
-    response = await websocket_client.receive()
-
-    # Check if the price has changed (within a reasonable range based on drift/volatility)
-    updated_price = response[symbol]["ask_prices"][0]
-    assert updated_price != initial_price

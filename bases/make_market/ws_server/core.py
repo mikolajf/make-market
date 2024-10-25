@@ -107,6 +107,13 @@ async def fx_price_publisher(
                 subscriptions.clear()
                 logger.info("Client disconnected inside fx_price_publisher.")
                 break
+        else:
+            try:
+                # Send heartbeat to the client
+                await websocket.ensure_open()
+            except websockets.exceptions.ConnectionClosed:
+                logger.info("Client disconnected inside fx_price_publisher.")
+                break
 
         # Wait for a second before the next update
         await asyncio.sleep(1)
