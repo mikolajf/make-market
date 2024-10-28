@@ -22,7 +22,8 @@ async def setup_database() -> None:
 
     """
     client = motor.motor_asyncio.AsyncIOMotorClient(  # type: ignore  # noqa: PGH003
-        f"mongodb://{settings.host}:{settings.port}"
+        f"mongodb://{settings.host}:{settings.port}",
+        directConnection=True,  # this is required for replica sets
     )
 
     logger.info("Initalizing schema")

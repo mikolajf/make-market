@@ -2,7 +2,7 @@
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
 
-client = MongoClient(f"mongodb://localhost:27017/", serverSelectionTimeoutMS=10, connectTimeoutMS=20000)
+client = MongoClient("mongodb://localhost:27017/", directConnection=True)
 
 try:
     info = client.server_info() # Forces a call.

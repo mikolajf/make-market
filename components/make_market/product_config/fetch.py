@@ -9,6 +9,4 @@ async def fetch_all_products() -> list[ProductConfig]:
         list[ProductConfig]: A list of all product configurations.
 
     """
-    results = await ProductConfig.find_all().to_list()  # type: ignore  # noqa: PGH003
-
-    return results
+    return await ProductConfig.find_all().to_list()  # type: ignore  # noqa: PGH003
