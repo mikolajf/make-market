@@ -28,4 +28,7 @@ async def setup_database() -> None:
 
     logger.info("Initalizing schema")
     # Initialize beanie with the ProductConfig document class and a database
-    await init_beanie(database=client.products, document_models=[ProductConfig])  # type: ignore  # noqa: PGH003
+    await init_beanie(
+        database=client.get_database(settings.database_name),
+        document_models=[ProductConfig],
+    )  # type: ignore  # noqa: PGH003

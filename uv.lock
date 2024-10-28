@@ -128,7 +128,7 @@ dependencies = [
     { name = "websockets" },
 ]
 
-[package.dependency-groups]
+[package.dev-dependencies]
 dev = [
     { name = "mongomock-motor" },
     { name = "mypy" },
@@ -147,7 +147,7 @@ requires-dist = [
     { name = "websockets", specifier = ">=13.1" },
 ]
 
-[package.metadata.dependency-groups]
+[package.metadata.requires-dev]
 dev = [
     { name = "mongomock-motor", specifier = ">=0.0.34" },
     { name = "mypy", specifier = ">=1.12.0" },

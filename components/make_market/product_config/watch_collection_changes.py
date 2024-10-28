@@ -11,19 +11,45 @@ settings = Settings().config_database
 
 
 async def watch_collection() -> None:
+    """
+    Watches a MongoDB collection for changes and logs them.
+
+    This function establishes a connection to a MongoDB database using the
+    motor_asyncio.AsyncIOMotorClient. It sets up a change stream to watch for
+    changes in the specified collection. If a change is detected, it logs the
+    change and updates the resume token. In case of an error, it attempts to
+    resume the change stream using the last known resume token.
+
+    The MongoDB connection details (host, port, database name, and collection
+    name) are retrieved from the `settings` object.
+
+    Note:
+        - The `directConnection=True` parameter is required for replica sets.
+        - The pipeline is currently set to watch for all changes (empty filter).
+
+    Raises:
+        pymongo.errors.PyMongoError: If the ChangeStream encounters an
+        unrecoverable error or the resume attempt fails to recreate the cursor.
+
+    """
     client = motor.motor_asyncio.AsyncIOMotorClient(  # type: ignore  # noqa: PGH003
         f"mongodb://{settings.host}:{settings.port}",
         directConnection=True,  # this is required for replica sets
     )
 
     resume_token = None
-    pipeline = [{"$match": {"operationType": "insert"}}]
-    # pipeline = [{}]
+    # pipeline = [{"$match": {"operationType": "insert"}}]  # noqa: ERA001
+    pipeline = [{}]
 
-    db = client.get_database("product")
+    db: motor.motor_asyncio.AsyncIOMotorDatabase = client.get_database(
+        settings.database_name
+    )
+    collection: motor.motor_asyncio.AsyncIOMotorCollection = db.get_collection(
+        settings.collection_name
+    )
 
     try:
-        async with client.get_database("products").watch(pipeline) as stream:
+        async with collection.watch(pipeline) as stream:
             async for change in stream:
                 logger.info(change)
                 resume_token = stream.resume_token
@@ -33,32 +59,15 @@ async def watch_collection() -> None:
         if resume_token is None:
             # There is no usable resume token because there was a
             # failure during ChangeStream initialization.
-            logger.error("...")
+            logger.exception("...")
         else:
             # Use the interrupted ChangeStream's resume token to
             # create a new ChangeStream. The new stream will
             # continue from the last seen insert change without
             # missing any events.
-            async with client.get_database("products").watch(
-                pipeline, resume_after=resume_token
-            ) as stream:
+            async with collection.watch(pipeline, resume_after=resume_token) as stream:
                 async for insert_change in stream:
-                    print(insert_change)
+                    logger.info(insert_change)
 
-
-# async def main() -> None:
-#     while change_stream.alive:
-#     change = await change_stream.try_next()
-#     # Note that the ChangeStream's resume token may be updated
-#     # even when no changes are returned.
-#     print("Current resume token: %r" % (change_stream.resume_token,))
-#     if change is not None:
-#         print("Change document: %r" % (change,))
-#         continue
-#     # We end up here when there are no recent changes.
-#     # Sleep for a while before trying again to avoid flooding
-#     # the server with getMore requests when no changes are
-#     # available.
-#     await asyncio.sleep(10)
 
 asyncio.run(watch_collection())
