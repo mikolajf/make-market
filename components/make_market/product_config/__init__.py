@@ -1,36 +1,30 @@
-import asyncio
-
 import motor.motor_asyncio
-from beanie import init_beanie  # type: ignore
+from beanie import init_beanie  # type: ignore  # noqa: PGH003
 from make_market.log.core import get_logger
-from make_market.product_config.schema import Listing, ProductConfig
+from make_market.product_config.schema import ProductConfig
 from make_market.settings.models import Settings
 
 settings = Settings().config_database
 logger = get_logger("product_config")
 
 
-async def init() -> None:
-    client = motor.motor_asyncio.AsyncIOMotorClient(  # type: ignore
+# TODO: we would need to call this function in the main application
+async def setup_database() -> None:
+    """
+    Asynchronously sets up the database connection and initializes the schema.
+
+    This function connects to a MongoDB instance using the motor_asyncio client
+    and initializes the Beanie ODM with the specified document models.
+
+    Raises:
+        MotorClientError: If there is an issue connecting to the MongoDB instance.
+        BeanieInitializationError: If there is an issue initializing the Beanie ODM.
+
+    """
+    client = motor.motor_asyncio.AsyncIOMotorClient(  # type: ignore  # noqa: PGH003
         f"mongodb://{settings.host}:{settings.port}"
     )
 
     logger.info("Initalizing schema")
     # Initialize beanie with the ProductConfig document class and a database
-    await init_beanie(database=client.products, document_models=[ProductConfig])  # type: ignore
-
-    eur_usd = ProductConfig(
-        symbol_name="EURUSD",
-        decimal_places=5,
-        listings=[
-            Listing(provider_name="Provider1", subscription_symbol="EURUSD_1"),
-            Listing(provider_name="Provider2", subscription_symbol="EURUSD_2"),
-        ],
-        enabled=True,
-    )
-
-    await eur_usd.insert()
-    logger.info("ProductConfig document inserted")
-
-
-asyncio.run(init())
+    await init_beanie(database=client.products, document_models=[ProductConfig])  # type: ignore  # noqa: PGH003
