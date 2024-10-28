@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "beanie>=1.27.0",
     "pydantic-settings>=2.6.0",
     "websockets>=13.1",
 ]
@@ -17,6 +18,8 @@ dev-dependencies = [
     "pre-commit>=4.0.1",
     "pytest>=8.3.3",
     "ruff>=0.6.9",
+    "pytest-mock>=3.14.0",
+    "mongomock-motor>=0.0.34",
 ]
 
 [build-system]
@@ -95,8 +98,14 @@ ignore = [
     "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
 ]
 
+[tool.pytest]
+
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+markers = [
+    "integration", # mark a test that uses other resources
+]
 
 [tool.mypy]
 python_version = "3.11"

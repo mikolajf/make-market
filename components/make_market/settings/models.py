@@ -15,9 +15,9 @@ class ConfigDatabaseSettings(BaseModel):
     """
 
     host: str = "localhost"
-    port: int = 5432
-    username: str = "postgres"
-    password: str = "password"
+    port: int = 27017
+    database_name: str = "products"
+    collection_name: str = "ProoductConfig"
 
 
 class QuestDatabaseSettings(BaseModel):
