@@ -1,13 +1,70 @@
 import asyncio
+import datetime
+from enum import StrEnum
+from typing import TypedDict
 
 import motor.motor_asyncio
 import pymongo.errors
+from bson import ObjectId, Timestamp
 from make_market.log.core import get_logger
+from make_market.product_config.schema import ProductConfig
 from make_market.settings.models import Settings
 
 logger = get_logger("__name__")
 
 settings = Settings().config_database
+
+
+class OperationType(StrEnum):
+    """
+    Enum representing the types of operations in MongoDB change streams.
+    """
+
+    INSERT = "insert"
+    UPDATE = "update"
+    DELETE = "delete"
+
+
+class Namespace(TypedDict):
+    """
+    TypedDict representing the namespace of a MongoDB collection.
+    """
+
+    db: str
+    coll: str
+
+
+class DocumentKey(TypedDict):
+    """
+    TypedDict representing the document key in a MongoDB collection.
+    """
+
+    _id: ObjectId
+
+
+class UpdateDescription(TypedDict):
+    """
+    TypedDict representing the update description in a MongoDB change event.
+    """
+
+    updatedFields: dict  # type: ignore  # noqa: PGH003
+    removedFields: list[str]
+    truncatedArrays: list[str]
+
+
+class ChangeEvent(TypedDict):
+    """
+    TypedDict representing a change event in a MongoDB collection.
+    """
+
+    _id: dict  # type: ignore  # noqa: PGH003
+    operationType: str
+    clusterTime: Timestamp
+    wallTime: datetime.datetime
+    fullDocument: ProductConfig | None
+    ns: Namespace
+    documentKey: DocumentKey
+    updateDescription: UpdateDescription | None
 
 
 async def watch_collection() -> None:
@@ -38,8 +95,6 @@ async def watch_collection() -> None:
     )
 
     resume_token = None
-    # pipeline = [{"$match": {"operationType": "insert"}}]  # noqa: ERA001
-    pipeline = [{}]
 
     db: motor.motor_asyncio.AsyncIOMotorDatabase = client.get_database(
         settings.database_name
@@ -49,9 +104,25 @@ async def watch_collection() -> None:
     )
 
     try:
-        async with collection.watch(pipeline) as stream:
+        async with collection.watch() as stream:
             async for change in stream:
-                logger.info(change)
+                logger.info("Change detected:")
+
+                change: ChangeEvent
+
+                match change["operationType"]:
+                    case OperationType.INSERT:
+                        logger.info("Operation type: insert")
+                        logger.debug(change["fullDocument"])
+                    case OperationType.UPDATE:
+                        logger.info("Operation type: update")
+                        logger.info(change["updateDescription"])
+                    case OperationType.DELETE:
+                        logger.info("Operation type: delete")
+                        logger.info(change["documentKey"]["_id"])
+                    case _:
+                        logger.warning("Operation type not recognized")
+
                 resume_token = stream.resume_token
     except pymongo.errors.PyMongoError:
         # The ChangeStream encountered an unrecoverable error or the
@@ -65,7 +136,7 @@ async def watch_collection() -> None:
             # create a new ChangeStream. The new stream will
             # continue from the last seen insert change without
             # missing any events.
-            async with collection.watch(pipeline, resume_after=resume_token) as stream:
+            async with collection.watch(resume_after=resume_token) as stream:
                 async for insert_change in stream:
                     logger.info(insert_change)
 
