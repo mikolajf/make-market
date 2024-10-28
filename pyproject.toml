@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "beanie>=1.27.0",
     "pydantic-settings>=2.6.0",
     "websockets>=13.1",
 ]

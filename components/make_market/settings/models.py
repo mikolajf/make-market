@@ -15,7 +15,7 @@ class ConfigDatabaseSettings(BaseModel):
     """
 
     host: str = "localhost"
-    port: int = 5432
+    port: int = 27017
     username: str = "postgres"
     password: str = "password"
 
