@@ -73,11 +73,14 @@ async def fx_price_publisher(
             message = {}
             for symbol in subscriptions:
                 # get random midprice and spread
+                # TODO: replace with MarketDataProtocol dependency injection. pass in the initializer
                 m = random.uniform(1.0, 2.0)  # midprice  # noqa: S311
                 s = random.uniform(0.01, 0.05)  # spread  # noqa: S311
 
                 # create orderbook
-                orderbook = OrderBook.random(midprice=m, spread=s)
+                orderbook = OrderBook.random_from_midprice_and_spread(
+                    midprice=m, spread=s
+                )
 
                 message[symbol] = orderbook.to_dict()
 
