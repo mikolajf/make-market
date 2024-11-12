@@ -139,3 +139,55 @@ class ConsumerProtocol(Protocol):
 
         """
         ...
+
+
+class AppProtocol(Protocol):
+    """
+    AppProtocol defines the interface for an application that manages configuration,
+    a single producer, and multiple consumers.
+    """
+
+    def __init__(
+        self,
+        config_service: ConfigurationServiceProtocol,
+        producer: ProducerProtocol,
+        consumers: list[ConsumerProtocol],
+    ) -> None:
+        """
+        Initializes the AppProtocol with the given configuration service, producer, and consumers.
+
+        Args:
+            config_service (ConfigurationServiceProtocol): The configuration service.
+            producer (ProducerProtocol): The producer.
+            consumers (list[ConsumerProtocol]): A list of consumers.
+
+        """
+        self.config_service = config_service
+        self.producer = producer
+        self.consumers = consumers
+
+    async def start(self) -> None:
+        """
+        Starts the application by connecting the producer and consumers,
+        and subscribing to configuration changes.
+
+        Returns:
+            None
+
+        """
+        await self.producer.connect()
+        for consumer in self.consumers:
+            await consumer.consume()
+        await self.config_service.subscribe_to_config_changes()
+
+    async def stop(self) -> None:
+        """
+        Stops the application by disconnecting the producer and consumers.
+
+        Returns:
+            None
+
+        """
+        await self.producer.disconnect()
+        for consumer in self.consumers:
+            await consumer.get_data()
