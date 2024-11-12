@@ -82,7 +82,7 @@ class OrderBook:
 
     # create class method to create a random orderbook given midprice and spread
     @classmethod
-    def random(
+    def random_from_midprice_and_spread(
         cls,
         midprice: float,
         spread: float,
@@ -117,6 +117,33 @@ class OrderBook:
         bid_sizes = [uniform(5.0, 15.0) for _ in range(n_bid_levels)]  # noqa: S311
 
         return cls(ask_prices, ask_sizes, bid_prices, bid_sizes)
+
+    @classmethod
+    def random_from_bid_ask_prices(
+        cls,
+        bid_price: float,
+        ask_price: float,
+        n_ask_levels: int = 10,
+        n_bid_levels: int = 10,
+    ) -> Self:
+        """
+        Create a random order book given a bid price and an ask price.
+
+        Args:
+            bid_price (float): The top bid price.
+            ask_price (float): The top ask price.
+            n_ask_levels (int, optional): The number of ask levels. Defaults to 10.
+            n_bid_levels (int, optional): The number of bid levels. Defaults to 10.
+
+        Returns:
+            OrderBook: An instance of OrderBook with random prices and sizes.
+
+        """
+        midprice = (bid_price + ask_price) / 2
+        spread = ask_price - bid_price
+        return cls.random_from_midprice_and_spread(
+            midprice, spread, n_ask_levels, n_bid_levels
+        )
 
     @property
     def top_level_prices(self) -> tuple[float | None, float | None]:
