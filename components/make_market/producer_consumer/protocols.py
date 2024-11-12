@@ -1,4 +1,5 @@
 # Protocols
+from collections.abc import AsyncIterator
 from typing import Protocol
 
 
@@ -11,6 +12,9 @@ class ConfigurationServiceProtocol(Protocol):
     asynchronously.
     """
 
+    def __init__(self, async_watch_function: AsyncIterator) -> None:
+        self.async_watch_function = async_watch_function()
+
     def register_listener(self, listener: "ProducerProtocol") -> None:
         """
         Registers a listener that adheres to the ProducerProtocol.
@@ -21,7 +25,7 @@ class ConfigurationServiceProtocol(Protocol):
         """
         ...
 
-    async def simulate_config_changes(self) -> None:
+    async def subscribe_to_config_changes(self) -> None:
         """
         Simulates configuration changes asynchronously.
 
@@ -33,7 +37,14 @@ class ConfigurationServiceProtocol(Protocol):
             None
 
         """
-        ...
+        while True:
+            try:
+                change = await self.async_watch_function.__anext__()
+            except StopAsyncIteration:
+                break
+
+            for listener in self.listeners:
+                await listener.on_config_change(change)
 
 
 class ProducerProtocol(Protocol):

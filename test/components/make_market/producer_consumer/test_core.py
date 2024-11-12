@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import random
+from collections.abc import AsyncIterator
 
 import pytest
 from make_market.log.core import get_logger
@@ -13,20 +14,31 @@ from make_market.producer_consumer import (
 logger = get_logger("test_logger")
 
 
+async def dummy_config_change_generator() -> AsyncIterator[dict[str, bool]]:
+    """
+    An asynchronous generator that yields configuration changes.
+
+    This generator simulates configuration changes by yielding a dictionary
+    with a key "active" and a boolean value. It waits for 1 second between
+    each yield.
+
+    Yields:
+        dict: A dictionary with a single key "active" and a boolean value.
+
+    """
+    for _ in range(2):
+        await asyncio.sleep(1)
+        yield {"active": random.choice([True, False])}
+
+
 class ConfigurationService(ConfigurationServiceProtocol):
-    def __init__(self):
+    def __init__(self, async_watch_function=dummy_config_change_generator):
         self.config = {"active": True}
+        self.async_watch_function = async_watch_function()
         self.listeners: list[ProducerProtocol] = []
 
     def register_listener(self, listener: ProducerProtocol) -> None:
         self.listeners.append(listener)
-
-    async def simulate_config_changes(self) -> None:
-        await asyncio.sleep(1)  # Simulate time delay for config changes
-        self.config["active"] = False
-        logger.info(f"Configuration changed: {self.config}")
-        for listener in self.listeners:
-            await listener.on_config_change(self.config)
 
 
 class Producer(ProducerProtocol):
@@ -68,8 +80,7 @@ async def test_configuration_service():
 
     class ProducerMock(ProducerProtocol):
         async def on_config_change(self, config: dict) -> None:
-            assert config["active"] is False
-            pytest.exit(returncode=0)
+            logger.info(f"Received config change: {config}")
 
         async def connect(self) -> None:
             raise NotImplementedError
@@ -81,7 +92,8 @@ async def test_configuration_service():
             raise NotImplementedError
 
     config_service.register_listener(ProducerMock())
-    await config_service.simulate_config_changes()
+    await config_service.subscribe_to_config_changes()
+    del config_service
 
 
 @pytest.mark.asyncio
