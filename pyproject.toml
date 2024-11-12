@@ -8,6 +8,7 @@ dependencies = [
     "pydantic-settings>=2.6.0",
     "websockets>=13.1",
     "yfinance>=0.2.48",
+    "zmq>=0.0.0",
 ]
 
 [tool.uv]
