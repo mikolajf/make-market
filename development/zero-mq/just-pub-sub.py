@@ -17,6 +17,9 @@ def main() -> None:
     pubsub.start_publishers(publishers=[random_int_producer])
     pubsub.start_subscribers(subscribers=[partial(message_printer, id=i) for i in range(3)])
     pubsub.setup_proxy()
+    pubsub.start_async_client()
+
+
 
 if __name__ == '__main__':
     main()

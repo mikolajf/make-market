@@ -117,6 +117,19 @@ class ProducerProtocol(Protocol):
         """
         ...
 
+    async def producer_generator(self) -> AsyncIterator[bytes]:
+        """
+        Asynchronously generates items or data.
+
+        This method is intended to be overridden by subclasses to implement
+        the specific logic for generating items or data in an asynchronous manner.
+
+        Yields:
+            Any: The items or data generated.
+
+        """
+        ...
+
     async def on_config_change(self, config: dict) -> None:
         """
         Asynchronously handles configuration changes.

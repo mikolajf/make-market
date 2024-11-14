@@ -6,7 +6,7 @@ import websockets
 from make_market.log.core import get_logger
 from make_market.orderbook.core import OrderBook
 from make_market.settings.models import Settings
-from make_market.ws_server.types import Actions, Request
+from make_market.ws_server.requests_types import Actions, Request
 
 # setup logger
 logger = get_logger("ws_server")

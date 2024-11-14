@@ -7,6 +7,18 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "aiozmq"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyzmq" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f6/1a/02537050681c6bf52a815f37e9c9087e031b09b44cd9ac885d87770fe87a/aiozmq-1.0.0.tar.gz", hash = "sha256:dac9069d36a47da439fa852ed37caaed3887b5928cb781e06a6a82e43682c6bb", size = 94294 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/91/f441fa327c4b0dc4e550e0833d8fc685902a48d9f77d0b5a81ec13d405ee/aiozmq-1.0.0-py3-none-any.whl", hash = "sha256:7e0d89489fcfc65de4157712de8a4ca613eaba3b33af06b471ceffc3e89537e6", size = 35558 },
+]
+
+[[package]]
 name = "annotated-types"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -298,7 +310,10 @@ name = "make-market"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "aiozmq" },
+    { name = "msgpack-python" },
     { name = "pydantic-settings" },
+    { name = "pyzmq" },
     { name = "websockets" },
     { name = "yfinance" },
     { name = "zmq" },
@@ -316,7 +331,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiozmq", specifier = ">=1.0.0" },
+    { name = "msgpack-python", specifier = ">=0.5.6" },
     { name = "pydantic-settings", specifier = ">=2.6.0" },
+    { name = "pyzmq", specifier = ">=26.2.0" },
     { name = "websockets", specifier = ">=13.1" },
     { name = "yfinance", specifier = ">=0.2.48" },
     { name = "zmq", specifier = ">=0.0.0" },
@@ -352,6 +370,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec9
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979 },
 ]
+
+[[package]]
+name = "msgpack-python"
+version = "0.5.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/20/6eca772d1a5830336f84aca1d8198e5a3f4715cd1c7fc36d3cc7f7185091/msgpack-python-0.5.6.tar.gz", hash = "sha256:378cc8a6d3545b532dfd149da715abae4fda2a3adb6d74e525d0d5e51f46909b", size = 138996 }
 
 [[package]]
 name = "multitasking"
