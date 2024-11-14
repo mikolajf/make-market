@@ -3,6 +3,25 @@ from collections.abc import AsyncIterator
 from typing import Protocol
 
 
+class ConfigListenerProtocol(Protocol):
+    """
+    ConfigListenerProtocol defines the interface for a listener that handles configuration changes.
+    """
+
+    async def on_config_change(self, config: dict) -> None:
+        """
+        Asynchronously handles configuration changes.
+
+        Args:
+            config (dict): A dictionary containing the new configuration settings.
+
+        Returns:
+            None
+
+        """
+        ...
+
+
 class ConfigurationServiceProtocol(Protocol):
     """
     A protocol that defines the configuration service interface.
@@ -12,10 +31,14 @@ class ConfigurationServiceProtocol(Protocol):
     asynchronously.
     """
 
+    async_watch_function: AsyncIterator
+    listeners: list[ConfigListenerProtocol]
+
     def __init__(self, async_watch_function: AsyncIterator) -> None:
         self.async_watch_function = async_watch_function()
+        self.listeners: list[ConfigListenerProtocol] = []
 
-    def register_listener(self, listener: "ProducerProtocol") -> None:
+    def register_listener(self, listener: "ConfigListenerProtocol") -> None:
         """
         Registers a listener that adheres to the ProducerProtocol.
 
