@@ -1,5 +1,4 @@
 # Publisher thread
-import asyncio
 import time
 from collections.abc import Callable
 from threading import Thread
@@ -9,7 +8,7 @@ import zmq
 import zmq.asyncio
 from make_market.log.core import get_logger
 
-PUBLISHER_THROTTHLE: Final[float] = 1
+PUBLISHER_THROTTHLE: Final[float] = 0.5
 
 FRONTEND_ADDR = "inproc://frontend"
 BACKEND_ADDR = "inproc://backend"
@@ -38,7 +37,7 @@ def publish_messages(data_generator: Callable[[], bytes]) -> None:
 
     while True:
         try:
-            data = data_generator()
+            data = next(data_generator())
             publisher.send(data)
         except zmq.ZMQError as e:
             if e.errno == zmq.ETERM:
@@ -107,17 +106,23 @@ class PubSubWithZeroMQ:
             s_thread = Thread(target=subscriber_thread, args=(sub,))
             s_thread.start()
 
-    async def async_client(self):
-        ctx = zmq.asyncio.Context.instance()
-        subscriber = ctx.socket(zmq.SUB)
-        subscriber.connect(BACKEND_ADDR)
-        subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
+    # async def async_client(self):
+    #     ctx = zmq.Context.instance()
+    #     subscriber = ctx.socket(zmq.SUB)
+    #     subscriber.connect(BACKEND_ADDR)
+    #     subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
 
-        while 1:
-            print(await subscriber.recv())
+    #     while True:
+    #         msg = await subscriber.recv()
+    #         logger.info(f"Async client received: {msg}")
 
-    def start_async_client(self):
-        asyncio.run(self.async_client())
+    # def start_async_client(self):
+    #     loop = asyncio.get_event_loop()
+
+    #     loop.run_until_complete(self.async_client())
+    #     # loop.run_until_complete(do_other_things())
+
+    #     loop.close()
 
     def setup_proxy(self) -> None:
         """
@@ -145,3 +150,7 @@ class PubSubWithZeroMQ:
 
         del subscriber, publisher
         self.ctx.term()
+
+    def start_proxy(self):
+        proxy_thread = Thread(target=self.setup_proxy)
+        proxy_thread.start()

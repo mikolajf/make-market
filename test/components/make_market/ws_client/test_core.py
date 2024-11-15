@@ -1,5 +1,5 @@
-from make_market.ws_client import client
+from make_market.ws_client import async
 
 
 def test_sample():
-    assert client is not None
+    assert async is not None

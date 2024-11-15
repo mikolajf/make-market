@@ -1,3 +1,6 @@
-from make_market.ws_client import client
+from make_market.log.core import get_logger
 
-__all__ = ["client"]
+logger = get_logger(__name__)
+
+
+__all__ = ["async"]
