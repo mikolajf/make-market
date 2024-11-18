@@ -47,7 +47,7 @@ async def async_subscriber(socket: zmq.asyncio.Socket):
 
     while 1:
         msg = await socket.recv_string()
-        print(msg)
+        print(f"Async Subscriber received: {msg}")
 
 def main():
     print('Hello, World!')
