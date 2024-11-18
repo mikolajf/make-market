@@ -42,7 +42,14 @@ class PubSubWithZeroMQ:
         the ZeroMQ contexts are cleaned up to release any resources held by them.
         """
         self.proxy_thread.join()
+        # close sync sockets
+        self.publisher_socket.close()
+        self.subscriber_socket.close()
         self.context.destroy()
+
+        # close async sockets
+        self.async_publisher_socket.close()
+        self.async_subscriber_socket.close()
         self.async_context.destroy()
 
     def setup_proxy(self) -> None:
