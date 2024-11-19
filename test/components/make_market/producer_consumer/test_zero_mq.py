@@ -35,7 +35,9 @@ async def async_subscriber(socket: zmq.asyncio.Socket) -> None:
 
 @pytest.fixture
 async def zmq_middleware():
-    ps = PubSubWithZeroMQ()
+    ps = PubSubWithZeroMQ(
+        in_address="tcp://localhost:5555", out_address="tcp://localhost:5556"
+    )
     ps.start()
     yield ps
     ps.stop()
