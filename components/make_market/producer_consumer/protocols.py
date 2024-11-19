@@ -3,6 +3,38 @@ from collections.abc import AsyncIterator
 from typing import Protocol
 
 
+class StartableStopable(Protocol):
+    """
+    Protocol for objects that can be started and stopped.
+    Classes implementing this protocol should provide implementations for the following methods:
+    - start: Method to start the object.
+    - stop: Method to stop the object.
+    """
+
+    def start(self) -> None:
+        """
+        Starts the producer or consumer process.
+
+        This method should be implemented by subclasses to define the specific
+        behavior when the process is started.
+
+        Returns:
+            None
+
+        """
+        ...
+
+    def stop(self) -> None:
+        """
+        Stops the current process or operation.
+
+        This method is intended to be overridden by subclasses to implement
+        specific stop functionality. It does not take any parameters and does
+        not return any value.
+        """
+        ...
+
+
 class ConfigListenerProtocol(Protocol):
     """
     ConfigListenerProtocol defines the interface for a listener that handles configuration changes.

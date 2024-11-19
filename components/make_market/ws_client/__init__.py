@@ -1,3 +1,3 @@
-from make_market.ws_client import client
+from make_market.ws_client.client import WebSocketConnectAsync
 
-__all__ = ["client"]
+__all__ = ["WebSocketConnectAsync"]
