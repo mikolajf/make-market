@@ -22,7 +22,6 @@ async def dummy_config_change_generator() -> AsyncIterator[dict[str, bool]]:
         dict: A dictionary with a single key "active" and a boolean value.
 
     """
-
     try:
         await asyncio.sleep(1)
         yield {"EUR/USD": True}
@@ -45,4 +44,4 @@ class ConfigurationService(ConfigurationServiceProtocol):  # noqa: D101
     def register_listener(self, listener: ConfigListenerProtocol) -> None:  # noqa: D102
         self.listeners.append(listener)
 
-    #  TODO this should implement start/stop methods
+    # TODO: this should implement start/stop methods
