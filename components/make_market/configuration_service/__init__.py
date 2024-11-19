@@ -1,10 +1,13 @@
 import asyncio
 from typing import AsyncIterator
 
+from make_market.log.core import get_logger
 from make_market.producer_consumer.protocols import (
     ConfigListenerProtocol,
     ConfigurationServiceProtocol,
 )
+
+logger = get_logger(__name__)
 
 
 async def dummy_config_change_generator() -> AsyncIterator[dict[str, bool]]:
@@ -19,14 +22,18 @@ async def dummy_config_change_generator() -> AsyncIterator[dict[str, bool]]:
         dict: A dictionary with a single key "active" and a boolean value.
 
     """
-    await asyncio.sleep(1)
-    yield {"EUR/USD": True}
-    await asyncio.sleep(1)
-    yield {"JPY/USD": True, "EUR/USD": True}
-    await asyncio.sleep(1)
-    yield {}
-    await asyncio.sleep(1)
-    yield {"EUR/USD": True}
+
+    try:
+        await asyncio.sleep(1)
+        yield {"EUR/USD": True}
+        await asyncio.sleep(1)
+        yield {"JPY/USD": True, "EUR/USD": True}
+        await asyncio.sleep(1)
+        yield {}
+        await asyncio.sleep(1)
+        yield {"EUR/USD": True}
+    except (KeyboardInterrupt, asyncio.exceptions.CancelledError):
+        logger.info("KeyboardInterrupt, stopping ConfigurationService")
 
 
 class ConfigurationService(ConfigurationServiceProtocol):  # noqa: D101
@@ -37,3 +44,5 @@ class ConfigurationService(ConfigurationServiceProtocol):  # noqa: D101
 
     def register_listener(self, listener: ConfigListenerProtocol) -> None:  # noqa: D102
         self.listeners.append(listener)
+
+    #  TODO this should implement start/stop methods

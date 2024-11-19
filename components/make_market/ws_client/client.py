@@ -12,7 +12,7 @@ from make_market.producer_consumer.zero_mq import PubSubWithZeroMQ
 from make_market.settings.models import Settings
 from make_market.ws_server.requests_types import Actions, Request
 
-logger = get_logger(__name__)
+logger = get_logger("ws_client")
 
 
 class WebSocketConnectAsync(ProducerProtocol, StartableStopable):
@@ -131,7 +131,7 @@ class WebSocketConnectAsync(ProducerProtocol, StartableStopable):
                 response: dict = await self._receive()
                 keys = "...".join(response.keys())
                 await self.publisher_socket.send_string(keys)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, asyncio.exceptions.CancelledError):
             logger.info("KeyboardInterrupt, stopping client")
             await self.stop()
 
@@ -200,7 +200,7 @@ class WebSocketConnectAsync(ProducerProtocol, StartableStopable):
 def _dummy_subscriber(socket: zmq.Socket, sub_id: int) -> None:
     while True:
         message = socket.recv_string()
-        print(f"Subscriber {sub_id} received: {message}")
+        print(f"Subscriber {sub_id} received: {message}")  # noqa: T201
 
 
 if __name__ == "__main__":
@@ -229,8 +229,13 @@ if __name__ == "__main__":
     config_service.register_listener(client)
 
     async def _main_for_testing():
-        await asyncio.gather(
-            client.start(), config_service.subscribe_to_config_changes()
-        )
+        try:
+            await asyncio.gather(
+                client.start(), config_service.subscribe_to_config_changes()
+            )
+        except (KeyboardInterrupt, asyncio.exceptions.CancelledError):
+            logger.info("KeyboardInterrupt, stopping main loop")
+            # TODO: this does not close properly
+            await asyncio.wait_for(client.stop(), timeout=1)
 
     asyncio.run(_main_for_testing())
