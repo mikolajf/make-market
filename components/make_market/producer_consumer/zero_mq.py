@@ -17,10 +17,18 @@ class PubSubWithZeroMQ:
     A class to handle publish-subscribe messaging using ZeroMQ.
     """
 
-    FRONTEND_ADDR = "ipc://frontend"
-    BACKEND_ADDR = "ipc://backend"
+    def __init__(
+        self, in_address: str = "ipc://frontend", out_address: str = "ipc://backend"
+    ) -> None:
+        logger.info(
+            "Initializing ZeroMQ context with in_address: %s and out_address: %s",
+            in_address,
+            out_address,
+        )
 
-    def __init__(self) -> None:
+        self.in_address = in_address
+        self.out_address = out_address
+
         self.context = zmq.Context()
         self.async_context = zmq.asyncio.Context.instance()
 
@@ -41,16 +49,20 @@ class PubSubWithZeroMQ:
         This method ensures that the proxy thread is properly terminated and that
         the ZeroMQ contexts are cleaned up to release any resources held by them.
         """
-        self.proxy_thread.join()
-        # close sync sockets
+        logger.info("Stopping ZeroMQ proxy thread.")
+        self.proxy_thread.join(1)
+
+        logger.info("Closing synchronous sockets and destroying context.")
         self.publisher_socket.close()
         self.subscriber_socket.close()
         self.context.destroy()
 
-        # close async sockets
+        logger.info("Closing async sockets and destroying context.")
         self.async_publisher_socket.close()
         self.async_subscriber_socket.close()
         self.async_context.destroy()
+
+        logger.info("ZeroMQ stopped.")
 
     def setup_proxy(self) -> None:
         """
@@ -68,10 +80,10 @@ class PubSubWithZeroMQ:
 
         """
         in_proxy = self.context.socket(zmq.XSUB)
-        in_proxy.connect(self.FRONTEND_ADDR)
+        in_proxy.connect(self.in_address)
 
         out_proxy = self.context.socket(zmq.XPUB)
-        out_proxy.bind(self.BACKEND_ADDR)
+        out_proxy.bind(self.out_address)
 
         def _proxy_with_interrupt(
             in_proxy: zmq.Socket[bytes], out_proxy: zmq.Socket[bytes]
@@ -81,10 +93,12 @@ class PubSubWithZeroMQ:
             except KeyboardInterrupt:
                 logger.info("Interrupted")
 
+        logger.info("Starting ZeroMQ proxy thread.")
         self.proxy_thread = Thread(
             target=_proxy_with_interrupt, args=(in_proxy, out_proxy)
         )
         self.proxy_thread.start()
+        logger.info("ZeroMQ proxy started.")
 
     @property
     def async_publisher_socket(self) -> zmq.asyncio.Socket:
@@ -99,7 +113,7 @@ class PubSubWithZeroMQ:
 
         """
         publisher = self.async_context.socket(zmq.PUB)
-        publisher.bind(self.FRONTEND_ADDR)
+        publisher.bind(self.in_address)
 
         return publisher
 
@@ -116,7 +130,7 @@ class PubSubWithZeroMQ:
 
         """
         subscriber = self.async_context.socket(zmq.SUB)
-        subscriber.connect(self.BACKEND_ADDR)
+        subscriber.connect(self.out_address)
         subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
 
         return subscriber
@@ -134,7 +148,7 @@ class PubSubWithZeroMQ:
 
         """
         publisher = self.context.socket(zmq.PUB)
-        publisher.bind(self.FRONTEND_ADDR)
+        publisher.bind(self.in_address)
 
         return publisher
 
@@ -151,7 +165,7 @@ class PubSubWithZeroMQ:
 
         """
         subscriber = self.context.socket(zmq.SUB)
-        subscriber.connect(self.BACKEND_ADDR)
+        subscriber.connect(self.out_address)
         subscriber.setsockopt_string(zmq.SUBSCRIBE, "")
 
         return subscriber

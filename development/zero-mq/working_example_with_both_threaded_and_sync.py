@@ -52,7 +52,7 @@ async def async_subscriber(socket: zmq.asyncio.Socket):
 def main():
     print('Hello, World!')
 
-    ps = PubSubWithZeroMQ()
+    ps = PubSubWithZeroMQ(in_address="tcp://localhost:5555", out_address="tcp://localhost:5556")
     ps.start()
 
     sub_thread1 = threading.Thread(target=subscriber, args=(ps.subscriber_socket,1))
