@@ -50,6 +50,7 @@ class VendorWebscoketServerSettings(BaseModel):
     """
 
     THROTTHLE_INTERVAL: int = 1
+    URL: str = "ws://localhost:8765"
 
 
 class Settings(BaseSettings, case_sensitive=False):
