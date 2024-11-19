@@ -1,5 +1,5 @@
 import asyncio
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from make_market.log.core import get_logger
 from make_market.producer_consumer.protocols import (
