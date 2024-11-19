@@ -3,7 +3,7 @@ from random import randint
 from string import ascii_uppercase as uppercase
 
 from make_market.producer_consumer.zero_mq import PubSubWithZeroMQ
-from make_market.ws_client.asyncro import WebSocketConnectAsync
+from make_market.ws_client.client import WebSocketConnectAsync
 
 
 def random_int_producer() -> bytes:

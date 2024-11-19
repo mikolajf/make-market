@@ -4,7 +4,7 @@ from string import ascii_uppercase as uppercase
 
 from make_market.producer_consumer.zero_mq import PubSubWithZeroMQ
 from make_market.settings.models import Settings
-from make_market.ws_client.asyncro import WebSocketConnectAsync
+from make_market.ws_client.client import WebSocketConnectAsync
 
 # fetch settings from central store
 settings = Settings().vendor_websocket

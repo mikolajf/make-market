@@ -36,7 +36,7 @@ def threaded_publisher(socket: zmq.Socket) -> NoReturn:
         print(f"Publishing: {message}")
         socket.send_string(message)
 
-def subscriber(socket: zmq.Socket, id: int) -> NoReturn:
+def subscriber(socket: zmq.Socket, id: int) -> None:
     
     while True:
         message = socket.recv_string()

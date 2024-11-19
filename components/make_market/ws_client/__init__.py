@@ -1,6 +1,3 @@
-from make_market.log.core import get_logger
+from make_market.ws_client.client import WebSocketConnectAsync
 
-logger = get_logger(__name__)
-
-
-__all__ = ["async"]
+__all__ = ["WebSocketConnectAsync"]
