@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from dataclasses_avroschema import AvroModel, types
+from make_market.messaging.decimals import float_to_digits_with_precision
 from make_market.ws_server.quote import RawQuoteDict
 
 
@@ -37,22 +38,38 @@ class RawVendorQuote:
     def from_raw_vendor_dict(
         cls, raw_quote_dict: RawQuoteDict, price_exponent: int, size_exponent: int
     ) -> "RawVendorQuote":
+        """
+        Create a RawVendorQuote instance from a raw vendor dictionary.
 
-        
+        Args:
+            raw_quote_dict (RawQuoteDict): The raw quote dictionary containing the quote data.
+            price_exponent (int): The exponent to use for price precision.
+            size_exponent (int): The exponent to use for size precision.
 
+        Returns:
+            RawVendorQuote: An instance of RawVendorQuote populated with the data from the raw quote dictionary.
 
-        # for each price, convert to decimal and store as digits
-        for price in raw_quote_dict["bid_prices"]:
-            price = Decimal(price)
-
+        """
         return cls(
             timestamp=datetime.datetime.fromisoformat(raw_quote_dict["timestamp"]),
-            bid_price=raw_quote_dict["bid_prices"],
-            ask_price=raw_quote_dict["ask_prices"],
-            price_exponent=2,
-            bid_size=raw_quote_dict["bid_sizes"],
-            ask_size=raw_quote_dict["ask_sizes"],
-            size_exponent=1,
+            bid_price=[
+                float_to_digits_with_precision(p, price_exponent)
+                for p in raw_quote_dict["bid_prices"]
+            ],
+            ask_price=[
+                float_to_digits_with_precision(p, price_exponent)
+                for p in raw_quote_dict["ask_prices"]
+            ],
+            price_exponent=price_exponent,
+            bid_size=[
+                float_to_digits_with_precision(s, size_exponent)
+                for s in raw_quote_dict["bid_sizes"]
+            ],
+            ask_size=[
+                float_to_digits_with_precision(s, size_exponent)
+                for s in raw_quote_dict["ask_sizes"]
+            ],
+            size_exponent=size_exponent,
         )
 
 
@@ -98,30 +115,27 @@ class BaseQuote(AvroModel):
     tick_id: int
 
     @classmethod
-    def from_raw_vendor_data(cls, raw_data: dict) -> "BaseQuote":
-        """
-        Creates a BaseQuote instance from raw vendor data.
-
-        Args:
-            raw_data (dict): The raw data from the vendor.
-
-        Returns:
-            BaseQuote: The BaseQuote instance created from the raw data.
-
-        """
+    def from_raw_vendor_quote(  # noqa: PLR0913
+        cls,
+        raw_quote: RawVendorQuote,
+        symbol: str,
+        exchange: str,
+        timestamp: datetime.datetime,
+        app_id: int,
+        tick_id: int,
+    ) -> "BaseQuote":
+        """Create a BaseQuote instance from a RawVendorQuote instance."""
         return cls(
-            symbol=raw_data["symbol"],
-            exchange=raw_data["exchange"],
-            vendor_timestamp=datetime.datetime.fromisoformat(
-                raw_data["vendor_timestamp"]
-            ),
-            timestamp=datetime.datetime.fromisoformat(raw_data["timestamp"]),
-            bid_price=raw_data["bid_price"],
-            ask_price=raw_data["ask_price"],
-            price_exponent=raw_data["price_exponent"],
-            bid_size=raw_data["bid_size"],
-            ask_size=raw_data["ask_size"],
-            size_exponent=raw_data["size_exponent"],
-            app_id=raw_data["app_id"],
-            tick_id=raw_data["tick_id"],
+            symbol=symbol,
+            exchange=exchange,
+            vendor_timestamp=raw_quote.timestamp,
+            timestamp=timestamp,
+            bid_price=raw_quote.bid_price,
+            ask_price=raw_quote.ask_price,
+            price_exponent=raw_quote.price_exponent,
+            bid_size=raw_quote.bid_size,
+            ask_size=raw_quote.ask_size,
+            size_exponent=raw_quote.size_exponent,
+            app_id=app_id,
+            tick_id=tick_id,
         )

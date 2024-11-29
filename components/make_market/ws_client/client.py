@@ -1,12 +1,14 @@
 import asyncio
 import json
+from datetime import datetime
 
 import websockets
 import zmq.asyncio
 from make_market.dict_zip import dict_zip
 from make_market.log.core import get_logger
-from make_market.messaging.schemas import BaseQuote
+from make_market.messaging.schemas import BaseQuote, RawVendorQuote
 from make_market.producer_consumer.protocols import ProducerProtocol, StartableStopable
+from make_market.settings.models import Settings
 from make_market.ws_server.requests_types import Actions, Request
 
 logger = get_logger("ws_client")
@@ -127,11 +129,30 @@ class WebSocketConnectAsync(ProducerProtocol, StartableStopable):
             while True:
                 response: dict = await self._receive()
 
-                # serialize the response into BaseQuote class
-                quote = BaseQuote.from_dict(response)
+                # received timestamp
+                received_timestamp = datetime.datetime.now(tz=Settings().timezone)
 
-                keys = "...".join(response.keys())
-                await self.publisher_socket.send_string(keys)
+                # TODO: handle message, for now just log it
+                logger.info(f"Received message: {response.pop("message")}")
+
+                # loop through the response and send it to the publisher socket
+                for symbol, quote in response.items():
+                    serialized_quote = RawVendorQuote.from_raw_vendor_dict(
+                        quote, price_exponent=-6, size_exponent=-2
+                    )
+
+                    # enrich the quote with the symbol
+                    enriched_quote = BaseQuote.from_raw_vendor_quote(
+                        serialized_quote,
+                        symbol=symbol,
+                        exchange="FX",
+                        app_id=1,
+                        tick_id=1,
+                        timestamp=received_timestamp,
+                    )
+
+                    await self.publisher_socket.send(enriched_quote.serialize())
+
         except (KeyboardInterrupt, asyncio.exceptions.CancelledError):
             logger.info("KeyboardInterrupt, stopping client")
             await self.stop()
