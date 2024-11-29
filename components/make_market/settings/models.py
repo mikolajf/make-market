@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -62,6 +64,8 @@ class Settings(BaseSettings, case_sensitive=False):
         quest (QuestDatabaseSettings): Configuration settings for the quest database.
 
     """
+
+    timezone: ZoneInfo = ZoneInfo("UTC")
 
     model_config = SettingsConfigDict(
         env_prefix="mm_",
