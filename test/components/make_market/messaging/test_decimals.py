@@ -3,29 +3,29 @@ from decimal import Decimal
 import pytest
 from make_market.messaging.decimals import (
     decimal_from_int_number_with_exponent,
-    float_to_int_with_precision,
+    float_to_digits_with_precision,
 )
 
 
 @pytest.mark.parametrize(
     ("value", "exponent", "expected"),
     [
-        (1.005, -3, (1005, -3)),
-        (1.234, -3, (1234, -3)),
-        (0.1234, -4, (1234, -4)),
-        (-1.005, -3, (-1005, -3)),
-        (123.456, -2, (12346, -2)),
-        (0.0001, -4, (1, -4)),
-        (0.000123, -6, (123, -6)),
-        (-0.000123, -6, (-123, -6)),
-        (1000.0, 0, (1000, 0)),
-        (0.0, 0, (0, 0)),
+        (1.005, -3, 1005),
+        (1.234, -3, 1234),
+        (0.1234, -4, 1234),
+        (-1.005, -3, -1005),
+        (123.456, -2, 12346),
+        (0.0001, -4, 1),
+        (0.000123, -6, 123),
+        (-0.000123, -6, -123),
+        (1000.0, 0, 1000),
+        (0.0, 0, 0),
     ],
 )
 def test_float_to_int_with_precision(
-    value: float, exponent: int, expected: tuple[int, int]
+    value: float, exponent: int, expected: int
 ) -> None:
-    assert float_to_int_with_precision(value, exponent) == expected
+    assert float_to_digits_with_precision(value, exponent) == expected
 
 
 @pytest.mark.parametrize(
