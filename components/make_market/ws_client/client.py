@@ -133,7 +133,8 @@ class WebSocketConnectAsync(ProducerProtocol, StartableStopable):
                 received_timestamp = datetime.datetime.now(tz=Settings().timezone)
 
                 # TODO: handle message, for now just log it
-                logger.info(f"Received message: {response.pop("message")}")
+                msg = response.pop("message", None)
+                logger.info(f"Received message: {msg}")
 
                 # loop through the response and send it to the publisher socket
                 for symbol, quote in response.items():

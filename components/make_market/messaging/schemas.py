@@ -1,6 +1,5 @@
 import datetime
 from dataclasses import dataclass
-from decimal import Decimal
 
 from dataclasses_avroschema import AvroModel, types
 from make_market.messaging.decimals import float_to_digits_with_precision

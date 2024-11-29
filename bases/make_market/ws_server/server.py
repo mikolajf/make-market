@@ -1,7 +1,6 @@
 import asyncio
 import json
 import random
-from datetime import datetime
 
 import websockets
 from make_market.log.core import get_logger

@@ -1,4 +1,3 @@
-import asyncio
 import json
 
 import pytest
@@ -26,7 +25,7 @@ async def test_subscribe_to_new_symbol(mocker, websocket_connect_async):
     mock_send = mocker.patch.object(
         websocket_connect_async, "_send", new_callable=mocker.AsyncMock
     )
-    await websocket_connect_async._subscribe_to_new_symbol("symbol1")
+    await websocket_connect_async._subscribe_to_new_symbol("symbol1")  # noqa: SLF001
     mock_send.assert_called_once_with(
         json.dumps({"action": "subscribe", "symbol": "symbol1"})
     )
@@ -37,7 +36,7 @@ async def test_unsubscribe_from_symbol(mocker, websocket_connect_async):
     mock_send = mocker.patch.object(
         websocket_connect_async, "_send", new_callable=mocker.AsyncMock
     )
-    await websocket_connect_async._unsubscribe_from_symbol("symbol1")
+    await websocket_connect_async._unsubscribe_from_symbol("symbol1")  # noqa: SLF001
     mock_send.assert_called_once_with(
         json.dumps({"action": "unsubscribe", "symbol": "symbol1"})
     )
@@ -46,7 +45,7 @@ async def test_unsubscribe_from_symbol(mocker, websocket_connect_async):
 @pytest.mark.asyncio
 async def test_send(mocker, websocket_connect_async):
     websocket_connect_async.websocket = mocker.AsyncMock()
-    await websocket_connect_async._send("test_message")
+    await websocket_connect_async._send("test_message")  # noqa: SLF001
     websocket_connect_async.websocket.send.assert_called_once_with("test_message")
 
 
@@ -56,7 +55,7 @@ async def test_receive(mocker, websocket_connect_async):
     websocket_connect_async.websocket.recv = mocker.AsyncMock(
         return_value=json.dumps({"key": "value"})
     )
-    response = await websocket_connect_async._receive()
+    response = await websocket_connect_async._receive()  # noqa: SLF001
     assert response == {"key": "value"}
 
 
@@ -69,7 +68,7 @@ async def test_send_receive(mocker, websocket_connect_async):
         websocket_connect_async, "_receive", new_callable=mocker.AsyncMock
     )
     mock_receive.return_value = {"key": "value"}
-    response = await websocket_connect_async._send_receive("test_message")
+    response = await websocket_connect_async._send_receive("test_message")  # noqa: SLF001
     mock_send.assert_called_once_with("test_message")
     mock_receive.assert_called_once()
     assert response == {"key": "value"}

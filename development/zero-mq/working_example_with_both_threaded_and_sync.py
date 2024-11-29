@@ -2,9 +2,9 @@ import asyncio
 import threading
 import time
 from typing import NoReturn
+
 import zmq
 import zmq.asyncio
-
 from make_market.producer_consumer.zero_mq import PubSubWithZeroMQ
 
 
@@ -12,7 +12,7 @@ async def standalone_publisher(address: str) -> NoReturn:
     context = zmq.asyncio.Context.instance()
     socket = context.socket(zmq.PUB)
     socket.bind(address)
-    
+
     while True:
         await asyncio.sleep(1)
         message = "Hello"
@@ -20,7 +20,7 @@ async def standalone_publisher(address: str) -> NoReturn:
         await socket.send_string(message)
 
 async def publisher(socket: zmq.asyncio.Socket) -> NoReturn:
-    
+
     while True:
         await asyncio.sleep(1)
         message = "Hello"
@@ -29,7 +29,7 @@ async def publisher(socket: zmq.asyncio.Socket) -> NoReturn:
 
 
 def threaded_publisher(socket: zmq.Socket) -> NoReturn:
-    
+
     while True:
         time.sleep(1)
         message = "Hello"
@@ -37,7 +37,7 @@ def threaded_publisher(socket: zmq.Socket) -> NoReturn:
         socket.send_string(message)
 
 def subscriber(socket: zmq.Socket, id: int) -> None:
-    
+
     while True:
         message = socket.recv_string()
         print(f"Subscriber {id} received: {message}")
@@ -71,7 +71,7 @@ def main():
     async def async_entrypoint():
         await asyncio.gather(
             publisher(ps.async_publisher_socket),
-            async_subscriber(ps.async_subscriber_socket)   
+            async_subscriber(ps.async_subscriber_socket)
         )
 
     asyncio.run(async_entrypoint())
