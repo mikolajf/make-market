@@ -1,11 +1,13 @@
 import asyncio
 import json
 import random
+from datetime import datetime
 
 import websockets
 from make_market.log.core import get_logger
 from make_market.orderbook.core import OrderBook
 from make_market.settings.models import Settings
+from make_market.ws_server.quote import create_raw_quote_from_orderbook
 from make_market.ws_server.requests_types import Actions, Request
 
 # setup logger
@@ -82,7 +84,11 @@ async def fx_price_publisher(
                     midprice=m, spread=s
                 )
 
-                message[symbol] = orderbook.to_dict()
+                symbol_quote = create_raw_quote_from_orderbook(
+                    orderbook, timezone=Settings().timezone
+                )
+
+                message[symbol] = symbol_quote
 
             try:
                 # Send updated prices to the client

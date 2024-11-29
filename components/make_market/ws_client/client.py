@@ -5,6 +5,7 @@ import websockets
 import zmq.asyncio
 from make_market.dict_zip import dict_zip
 from make_market.log.core import get_logger
+from make_market.messaging.schemas import BaseQuote
 from make_market.producer_consumer.protocols import ProducerProtocol, StartableStopable
 from make_market.ws_server.requests_types import Actions, Request
 
@@ -125,6 +126,10 @@ class WebSocketConnectAsync(ProducerProtocol, StartableStopable):
         try:
             while True:
                 response: dict = await self._receive()
+
+                # serialize the response into BaseQuote class
+                quote = BaseQuote.from_dict(response)
+
                 keys = "...".join(response.keys())
                 await self.publisher_socket.send_string(keys)
         except (KeyboardInterrupt, asyncio.exceptions.CancelledError):
