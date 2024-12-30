@@ -28,6 +28,15 @@ wheels = [
 ]
 
 [[package]]
+name = "casefy"
+version = "0.1.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/64/bd/198e4bc5dbfa8d363106fac2ca0bbd8639e1c66d7fbd2c4e3383a9cc0cb4/casefy-0.1.7.tar.gz", hash = "sha256:6accce985a64b9edb2a610a29ac489d78fac80e52ff8f2d137e294f2f92b8027", size = 123300 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/09/24eff895c2b59e7bd2d6aa1cc2e7955137844ec4f9f06e2770a1399755a3/casefy-0.1.7-py3-none-any.whl", hash = "sha256:ab05ff1c67f2a8e62d9f8986fa9a849416d61ac5413ec57d1f827b4f36589cf6", size = 6180 },
+]
+
+[[package]]
 name = "certifi"
 version = "2024.8.30"
 source = { registry = "https://pypi.org/simple" }
@@ -166,12 +175,75 @@ wheels = [
 ]
 
 [[package]]
+name = "dacite"
+version = "1.8.1"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/21/0f/cf0943f4f55f0fbc7c6bd60caf1343061dff818b02af5a0d444e473bb78d/dacite-1.8.1-py3-none-any.whl", hash = "sha256:cc31ad6fdea1f49962ea42db9421772afe01ac5442380d9a99fcf3d188c61afe", size = 14309 },
+]
+
+[[package]]
+name = "dataclasses-avroschema"
+version = "0.65.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "casefy" },
+    { name = "dacite" },
+    { name = "fastavro" },
+    { name = "inflection" },
+    { name = "python-dateutil" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7f/0e/e7dea09306957543092b16a3ffa2ef7fd0b823b8f96c6c50ee26aad7f744/dataclasses_avroschema-0.65.4.tar.gz", hash = "sha256:d91c63b854b397595fb90946840fe02f29c1ca8cec000f3aa79f8f757aae0528", size = 45585 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/51/e6/0e7149c698ae8ad54eb00afe415a23589157667c3b4c3a144ffafb3e0d46/dataclasses_avroschema-0.65.4-py3-none-any.whl", hash = "sha256:f9a12541c73dfd79d68be4e873b0045b38fc03f31457e76102c91c0df75958d9", size = 57422 },
+]
+
+[package.optional-dependencies]
+faker = [
+    { name = "faker" },
+]
+
+[[package]]
 name = "distlib"
 version = "0.3.9"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/0d/dd/1bec4c5ddb504ca60fc29472f3d27e8d4da1257a854e1d96742f15c1d02d/distlib-0.3.9.tar.gz", hash = "sha256:a60f20dea646b8a33f3e7772f74dc0b2d0772d2837ee1342a00645c81edf9403", size = 613923 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/91/a1/cf2472db20f7ce4a6be1253a81cfdf85ad9c7885ffbed7047fb72c24cf87/distlib-0.3.9-py2.py3-none-any.whl", hash = "sha256:47f8c22fd27c27e25a65601af709b38e4f0a45ea4fc2e710f65755fa8caaaf87", size = 468973 },
+]
+
+[[package]]
+name = "faker"
+version = "30.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d4/0c/4fa93aa009e076c26e17b16432021b0b19b61b990a026ab0d74670699d4e/faker-30.10.0.tar.gz", hash = "sha256:c2e627d3becec67f7a45400d3670018b5abb3f0728b7dfaa06c135b7df1ce3fb", size = 1850082 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/67/52/c0d8634fc38960037731167028f9332675bbe4db5cb8b9a92954bc6fb000/Faker-30.10.0-py3-none-any.whl", hash = "sha256:5f05ee92ddf0e1736d95dca41b2a16ee06d987b736fa4ddecdb047abf2e9024b", size = 1889119 },
+]
+
+[[package]]
+name = "fastavro"
+version = "1.9.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/11/56/72dc3fa6985c7f27b392cd3991c466eb61208f3c6cb7fc2f12e6bfc6f774/fastavro-1.9.7.tar.gz", hash = "sha256:13e11c6cb28626da85290933027cd419ce3f9ab8e45410ef24ce6b89d20a1f6c", size = 987818 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/89/61/b8b18aebc01e5d5a77042f6d555fe091d3279242edd5639252c9fcb9a3b7/fastavro-1.9.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ec8499dc276c2d2ef0a68c0f1ad11782b2b956a921790a36bf4c18df2b8d4020", size = 1040249 },
+    { url = "https://files.pythonhosted.org/packages/a0/a1/c6539ac9f6e068c1920f5d6a823113cd60088160050ed32ee4e7b960c1aa/fastavro-1.9.7-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:76d9d96f98052615ab465c63ba8b76ed59baf2e3341b7b169058db104cbe2aa0", size = 3312219 },
+    { url = "https://files.pythonhosted.org/packages/68/2b/0015355fb7dbf31dee0f3e69e6fa1ff43967500a8b1abb81de5a15f24b16/fastavro-1.9.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:919f3549e07a8a8645a2146f23905955c35264ac809f6c2ac18142bc5b9b6022", size = 3334160 },
+    { url = "https://files.pythonhosted.org/packages/60/08/62707fe5bfb7c4dca99132c969b38270579bf96408552a0baf201e861e84/fastavro-1.9.7-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:9de1fa832a4d9016724cd6facab8034dc90d820b71a5d57c7e9830ffe90f31e4", size = 3282829 },
+    { url = "https://files.pythonhosted.org/packages/b2/7e/21b3066973c60309f8e58f3d0d63dfdad196354217416384577c1e8faee0/fastavro-1.9.7-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:1d09227d1f48f13281bd5ceac958650805aef9a4ef4f95810128c1f9be1df736", size = 3419466 },
+    { url = "https://files.pythonhosted.org/packages/43/b3/cac5151810a8c8b5ef318b488a61288fe07e623e9b342c3fc2f60cbfdede/fastavro-1.9.7-cp311-cp311-win_amd64.whl", hash = "sha256:2db993ae6cdc63e25eadf9f93c9e8036f9b097a3e61d19dca42536dcc5c4d8b3", size = 500131 },
+    { url = "https://files.pythonhosted.org/packages/bb/30/e6f13d07ca6b2ba42719192a36233d660d75bbdc91026a20da0e08f8d5f3/fastavro-1.9.7-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:4e1289b731214a7315884c74b2ec058b6e84380ce9b18b8af5d387e64b18fc44", size = 1035760 },
+    { url = "https://files.pythonhosted.org/packages/e0/29/dd2f5b2213be103a6b22cbf62e1e17a8423aa687c05f37510688d7ed5987/fastavro-1.9.7-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:eac69666270a76a3a1d0444f39752061195e79e146271a568777048ffbd91a27", size = 3263393 },
+    { url = "https://files.pythonhosted.org/packages/69/4c/011823812409d16c6785754c5332e3f551b8131ea14cf9dd14155a61baaf/fastavro-1.9.7-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9be089be8c00f68e343bbc64ca6d9a13e5e5b0ba8aa52bcb231a762484fb270e", size = 3328621 },
+    { url = "https://files.pythonhosted.org/packages/85/1a/d388306a809ad3b4820f1bd67b2fdd9dd9d0af8782dea6524bdb7fd249ef/fastavro-1.9.7-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:d576eccfd60a18ffa028259500df67d338b93562c6700e10ef68bbd88e499731", size = 3256407 },
+    { url = "https://files.pythonhosted.org/packages/68/dc/66cc5227809074beb61cf19bfd615b5b1c0bce0d833af69a2d02b4408316/fastavro-1.9.7-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:ee9bf23c157bd7dcc91ea2c700fa3bd924d9ec198bb428ff0b47fa37fe160659", size = 3418234 },
+    { url = "https://files.pythonhosted.org/packages/c8/0c/92b468e4649e61eaa2d93a92e19a5b57a0f6cecaa236c53a76f3f72a4696/fastavro-1.9.7-cp312-cp312-win_amd64.whl", hash = "sha256:b6b2ccdc78f6afc18c52e403ee68c00478da12142815c1bd8a00973138a166d0", size = 487778 },
 ]
 
 [[package]]
@@ -223,6 +295,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f1/70/7703c29685631f5a7590aa73f1f1d3fa9a380e654b86af429e0934a32f7d/idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9", size = 190490 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3", size = 70442 },
+]
+
+[[package]]
+name = "inflection"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e1/7e/691d061b7329bc8d54edbf0ec22fbfb2afe61facb681f9aaa9bff7a27d04/inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417", size = 15091 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/91/aa6bde563e0085a02a435aa99b49ef75b0a4b062635e606dab23ce18d720/inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2", size = 9454 },
 ]
 
 [[package]]
@@ -298,6 +379,7 @@ name = "make-market"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "dataclasses-avroschema", extra = ["faker"] },
     { name = "pydantic-settings" },
     { name = "pyzmq" },
     { name = "tornado" },
@@ -319,6 +401,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "dataclasses-avroschema", extras = ["faker"], specifier = ">=0.65.4" },
     { name = "pydantic-settings", specifier = ">=2.6.0" },
     { name = "pyzmq", specifier = ">=26.2.0" },
     { name = "tornado", specifier = ">=6.4.1" },

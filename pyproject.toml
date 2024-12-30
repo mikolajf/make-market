@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "dataclasses-avroschema[faker]>=0.65.4",
     "pydantic-settings>=2.6.0",
     "pyzmq>=26.2.0",
     "tornado>=6.4.1",
