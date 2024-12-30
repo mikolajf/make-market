@@ -1,7 +1,8 @@
 import datetime
 from dataclasses import dataclass, field
+from typing import Union, type
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel, SerializationType, types
 from make_market.messaging.decimals import float_to_digits_with_precision
 from make_market.messaging.status import QuoteStatus
 from make_market.ws_server.quote import RawQuoteDict
@@ -115,7 +116,7 @@ class BaseQuote(AvroModel):
     tick_id: int
 
     # quote status
-    status: QuoteStatus = field(default=QuoteStatus(0))
+    status: int = field(default=QuoteStatus(0))
 
     @classmethod
     def from_raw_vendor_quote(  # noqa: PLR0913
@@ -142,3 +143,23 @@ class BaseQuote(AvroModel):
             app_id=app_id,
             tick_id=tick_id,
         )
+
+    @classmethod
+    def deserialize(
+        cls: type["AvroModel"],
+        data: bytes,
+        serialization_type: SerializationType = "avro",
+        create_instance: bool = True,  # noqa: FBT001, FBT002
+        writer_schema: types.JsonDict | type["AvroModel"] | None = None,
+    ) -> Union[types.JsonDict, "AvroModel"]:
+        """Overrides AvroModel deserialize method to handle QuoteStatus."""
+        payload = cls.deserialize_to_python(data, serialization_type, writer_schema)
+
+        # initalize status as QuoteStatus
+        payload["status"] = QuoteStatus(payload["status"])
+
+        obj = cls.parse_obj(payload)
+
+        if not create_instance:
+            return obj.to_dict()
+        return obj

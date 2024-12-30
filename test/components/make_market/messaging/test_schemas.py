@@ -76,6 +76,9 @@ def test_changing_status(fake_quote: BaseQuote) -> None:
     # Deserialize the Avro data back to a BaseQuote instance
     deserialized_fake_quote = BaseQuote.deserialize(avro_data)
 
+    # assert QuoteStatus.CROSSED_PRICE in status
+    assert QuoteStatus.CROSSED_PRICE in deserialized_fake_quote.status
+
     # assert that the status is preserved
     assert status | QuoteStatus.CROSSED_PRICE == deserialized_fake_quote.status
 
