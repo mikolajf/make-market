@@ -12,16 +12,14 @@ def test_ok_status():
     status = QuoteStatus(0)
 
     assert status == QuoteStatus(0)
-    assert not bool(status), "Empty status should be False"
+    assert not bool(status)
 
 
 def test_starting_with_ok_then_editing():
     status = QuoteStatus(0)
     status |= QuoteStatus.CROSSED_PRICE
 
-    assert status == QuoteStatus.CROSSED_PRICE, "Status should be CROSSED_PRICE"
-    assert QuoteStatus.CROSSED_PRICE in status, "Status should contain CROSSED_PRICE"
-    assert (
-        QuoteStatus.EMPTY_ORDERBOOK not in status
-    ), "Status should not contain EMPTY_ORDERBOOK"
-    assert bool(status), "Status should be True"
+    assert status == QuoteStatus.CROSSED_PRICE
+    assert QuoteStatus.CROSSED_PRICE in status
+    assert QuoteStatus.EMPTY_ORDERBOOK not in status
+    assert bool(status)

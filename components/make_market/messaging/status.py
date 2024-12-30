@@ -1,7 +1,7 @@
 from enum import Flag, auto
 
 
-class QuoteStatus(Flag):
+class QuoteStatus(int, Flag):
     """
     QuoteStatus is an enumeration that represents various statuses of a market quote.
 

@@ -1,8 +1,9 @@
 import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from dataclasses_avroschema import AvroModel, types
 from make_market.messaging.decimals import float_to_digits_with_precision
+from make_market.messaging.status import QuoteStatus
 from make_market.ws_server.quote import RawQuoteDict
 
 
@@ -112,6 +113,9 @@ class BaseQuote(AvroModel):
     # ids
     app_id: int
     tick_id: int
+
+    # quote status
+    status: QuoteStatus = field(default=QuoteStatus(0))
 
     @classmethod
     def from_raw_vendor_quote(  # noqa: PLR0913
