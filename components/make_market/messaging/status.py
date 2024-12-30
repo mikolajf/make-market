@@ -1,7 +1,7 @@
-from enum import Flag, auto
+from enum import KEEP, Flag, auto
 
 
-class QuoteStatus(int, Flag):
+class QuoteStatus(Flag, boundary=KEEP):
     """
     QuoteStatus is an enumeration that represents various statuses of a market quote.
 

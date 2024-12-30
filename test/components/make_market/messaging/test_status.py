@@ -23,3 +23,9 @@ def test_starting_with_ok_then_editing():
     assert QuoteStatus.CROSSED_PRICE in status
     assert QuoteStatus.EMPTY_ORDERBOOK not in status
     assert bool(status)
+
+
+def test_above_max():
+    # testing with value that is not mapped to any status
+    status = QuoteStatus(1 << 10)
+    assert status.value == 1 << 10
